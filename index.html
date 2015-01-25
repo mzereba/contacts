@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>Contacts Manager</title>
+		<script src="https://code.angularjs.org/1.2.17/angular.js"></script>
+		<script src="js/angular-ui-bootstrap-modal.js"></script>
+		<script src="js/script.js"></script>
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body ng-app="Contacts" ng-controller="ContactController">
+		<div id="header">
+			<h1>Contacts Manager</h1>
+			<p>Select a contact in the list on the left or edit the details, or click the New Contact button to add a contact to your Contact Manager.</p>
+		</div>
+		<div id="content">
+			<table class="bordered">
+				<thead>
+				<tr>
+				    <th>Name</th>
+				    <th>Email</th>
+				    <th>Phone</th>
+				    <th>Action</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr ng-repeat="contact in contacts">
+				    <td>{{ contact.name }}</td>
+				    <td>{{ contact.email }}</td>
+				    <td>{{ contact.phone }}</td>
+				    <td>
+				        <a href="#" ng-click="edit(contact.id)">edit</a> |
+				        <a href="#" ng-click="del(contact.id)">delete</a>
+				    </td>
+				 </tr>
+				</tbody>
+			</table>
+			<p><button ng:click="add()">New Contact</button></p>  
+		</div>
+		<div id="formpopup" modal="showModal" close="cancel()">
+			<div class="modal-header">
+				<h4>New Contact</h4>
+			</div>
+			<div class="modal-body">
+				<form>
+				    <label>Name</label>
+				       <input name="name" ng-model="newcontact.name" type="text"><br><br>
+				    <label>Email</label>
+				       <input name="email" ng-model="newcontact.email" type="text"><br><br>
+				    <label>Phone</label>
+				       <input name="phone" ng-model="newcontact.phone" type="text">
+				       <br><br>
+				    <input ng-model="newcontact.id" type="hidden">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-success" ng-click="save()">Save</button>
+				<button class="btn" ng-click="cancel()">Cancel</button>
+			</div>
+		</div>
+	</body>
+</html>
