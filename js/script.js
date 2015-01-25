@@ -85,10 +85,12 @@ module.controller('ContactController', function ($scope, ContactService) {
     	ContactService.save($scope.newcontact);
         $scope.newcontact = {};
     	$scope.showModal = false;
+    	$scope.newcontact = {};
     };
     
     $scope.cancel = function() {
     	$scope.showModal = false;
+    	$scope.newcontact = {};
     };
     
 })
