@@ -72,12 +72,14 @@ module.controller('ContactController', function ($scope, ContactService) {
     
     // Functions for modal management
     $scope.add = function() {
-    	$scope.showModal = true;
+    	 $("#modal-title").text("New Contact");
+    	 $scope.showModal = true;
     };
     
  // Functions for modal management
     $scope.edit = function(id) {
     	$scope.showModal = true;
+    	$("#modal-title").text("Edit Contact");
     	$scope.newcontact = angular.copy(ContactService.get(id));
     };
     

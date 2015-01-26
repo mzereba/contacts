@@ -6,12 +6,13 @@
 		<script src="https://code.angularjs.org/1.2.17/angular.js"></script>
 		<script src="js/angular-ui-bootstrap-modal.js"></script>
 		<script src="js/script.js"></script>
+		<script src="js/jquery.min.js"></script>
 		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/bootstrap.css" />
 	</head>
 	<body ng-app="Contacts" ng-controller="ContactController">
 		<div id="header">
-			<h1>Contacts Manager</h1>
-			<p>Select a contact in the list on the left or edit the details, or click the New Contact button to add a contact to your Contact Manager.</p>
+			Contacts Manager <button class="btn btn-success block" ng:click="add()">New Contact</button>
 		</div>
 		<div id="content">
 			<table class="bordered">
@@ -35,21 +36,19 @@
 				 </tr>
 				</tbody>
 			</table>
-			<p><button ng:click="add()">New Contact</button></p>  
 		</div>
-		<div id="formpopup" modal="showModal" close="cancel()">
+		<div modal="showModal" close="cancel()">
 			<div class="modal-header">
-				<h4>New Contact</h4>
+				<h4 id="modal-title"></h4>
 			</div>
 			<div class="modal-body">
 				<form>
 				    <label>Name</label>
-				       <input name="name" ng-model="newcontact.name" type="text"><br><br>
+				       <input name="name" ng-model="newcontact.name" type="text">
 				    <label>Email</label>
-				       <input name="email" ng-model="newcontact.email" type="text"><br><br>
+				       <input name="email" ng-model="newcontact.email" type="text">
 				    <label>Phone</label>
 				       <input name="phone" ng-model="newcontact.phone" type="text">
-				       <br><br>
 				    <input ng-model="newcontact.id" type="hidden">
 				</form>
 			</div>
