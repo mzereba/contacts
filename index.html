@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>Contacts Manager</title>
+		<script src="https://code.angularjs.org/1.2.17/angular.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.5.2/webcomponents.min.js"></script>
+
+		<script src="js/angular-ui-bootstrap-modal.js"></script>
+		<script src="js/script.js"></script>
+		<script src="js/jquery.min.js"></script>
+		
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/bootstrap.css" />
+	</head>
+	<body ng-app="Contacts" ng-controller="ContactController">
+		<div id="header">
+			Contacts Manager </button><button class="btn btn-login block" ng:click="login()">Authenticate</button><button class="btn btn-success block" ng:click="add()">New Contact
+		</div>
+		<div id="content">
+			<table class="bordered">
+				<thead>
+				<tr>
+				    <th>Name</th>
+				    <th>Email</th>
+				    <th>Phone</th>
+				    <th>Action</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr ng-repeat="contact in contacts">
+				    <td>{{ contact.name }}</td>
+				    <td>{{ contact.email }}</td>
+				    <td>{{ contact.phone }}</td>
+				    <td>
+				        <a href="#" ng-click="edit(contact.id)">edit</a> |
+				        <a href="#" ng-click="del(contact.id)">delete</a>
+				    </td>
+				 </tr>
+				</tbody>
+			</table>
+		</div>
+		<div modal="showModal" close="cancel()">
+			<div class="modal-header">
+				<h4 id="modal-title"></h4>
+			</div>
+			<div class="modal-body">
+				<form>
+				    <label>Name</label>
+				       <input name="name" ng-model="newcontact.name" type="text">
+				    <label>Email</label>
+				       <input name="email" ng-model="newcontact.email" type="text">
+				    <label>Phone</label>
+				       <input name="phone" ng-model="newcontact.phone" type="text">
+				    <input ng-model="newcontact.id" type="hidden">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-success" ng-click="save()">Save</button>
+				<button class="btn" ng-click="cancel()">Cancel</button>
+			</div>
+		</div>
+		<div modal="authenticationModal" close="cancel()">
+			<div class="modal-header">
+				<h4 id="modal-title">WebID Authentication</h4>
+			</div>
+			<div class="modal-body">
+				<webid-signup></webid-signup>
+			    <script>
+			        // Listen to WebIDAuth events
+			        window.addEventListener('WebIDAuth',function(e) {
+			            console.log(e.detail);
+			            if (e.detail.success === true) {
+			                console.log("Auth successful! WebID: "+e.detail.user);
+			            } else {
+			                console.log("Auth failed!");
+			                console.log(e.detail);
+			            }
+			        },false);
+			    </script>
+			    <iframe src="https://linkeddata.github.io/signup/" width="525px" height="300px" style="border: 0px"></iframe>
+			</div>
+		</div>
+	</body>
+</html>
