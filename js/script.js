@@ -102,5 +102,9 @@ module.controller('ContactController', function ($scope, $sce, ContactService) {
     	$scope.newcontact = {};
     };
     
+    $scope.close = function() {
+    	$scope.authenticationModal = false;
+    };
+    
 })
 
