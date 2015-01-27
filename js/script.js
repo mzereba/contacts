@@ -60,10 +60,13 @@ module.service('ContactService', function () {
     }
 });
 
-module.controller('ContactController', function ($scope, ContactService) {
+module.controller('ContactController', function ($scope, $sce, ContactService) {
 	
     $scope.contacts = ContactService.list();
     
+    var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
+    $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
+
     $scope.del = function (id) {
  
         ContactService.del(id);
