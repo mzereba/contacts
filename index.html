@@ -4,7 +4,6 @@
 	<head>
 		<title>Contacts Manager</title>
 		<script src="https://code.angularjs.org/1.2.17/angular.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.5.2/webcomponents.min.js"></script>
 
 		<script src="js/angular-ui-bootstrap-modal.js"></script>
 		<script src="js/script.js"></script>
@@ -65,20 +64,24 @@
 				<h4 id="modal-title">WebID Authentication</h4>
 			</div>
 			<div class="modal-body">
-				<webid-signup></webid-signup>
 			    <script>
 			        // Listen to WebIDAuth events
-			        window.addEventListener('WebIDAuth',function(e) {
-			            console.log(e.detail);
-			            if (e.detail.success === true) {
-			                console.log("Auth successful! WebID: "+e.detail.user);
-			            } else {
-			                console.log("Auth failed!");
-			                console.log(e.detail);
-			            }
-			        },false);
+			        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+					var eventListener = window[eventMethod];
+					var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+			        window.eventListener(messageEvent,function(e) {
+					    if (e.data.slice(0,5) == 'User:') {
+					      console.log(e.data);
+					      // fetch user data after login
+					      //$scope.login(e.data.slice(5, e.data.length), true);
+					    }
+					    if (e.data.slice(0,6) == "cancel") {
+					      $scope.showLogin = false;
+					      $scope.$apply();
+					    }
+					  },false);
 			    </script>
-			    <iframe src="https://linkeddata.github.io/signup/" sandbox="allow-same-origin allow-scripts allow-forms" width="525px" height="300px" style="border: 0px"></iframe>
+			    <iframe ng-src="{{widgetURI}}" sandbox="allow-same-origin allow-scripts" width="525px" height="300px" style="border: 0px"></iframe>
 			</div>
 		</div>
 	</body>
