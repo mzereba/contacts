@@ -3380,6 +3380,24 @@ input[type="button"].btn-block {
   filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
+.btn-login {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #EA2839;
+  *background-color: #51a351;
+  background-image: -moz-linear-gradient(top, #EA2839, #d00000);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#EA2839), to(#d00000));
+  background-image: -webkit-linear-gradient(top, #EA2839, #d00000);
+  background-image: -o-linear-gradient(top, #EA2839, #d00000);
+  background-image: linear-gradient(to bottom, #EA2839, #d00000);
+  background-repeat: repeat-x;
+  border-color: #EA2839 #EA2839 #D00000;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff51a351', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+
 .btn-success:hover,
 .btn-success:active,
 .btn-success.active,
@@ -3387,6 +3405,16 @@ input[type="button"].btn-block {
 .btn-success[disabled] {
   color: #ffffff;
   background-color: #51a351;
+  *background-color: #499249;
+}
+
+.btn-login:hover,
+.btn-login:active,
+.btn-login.active,
+.btn-login.disabled,
+.btn-login[disabled] {
+  color: #ffffff;
+  background-color: #D00000;
   *background-color: #499249;
 }
 

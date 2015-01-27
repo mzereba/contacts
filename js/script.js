@@ -61,7 +61,7 @@ module.service('ContactService', function () {
 });
 
 module.controller('ContactController', function ($scope, ContactService) {
-	 
+	
     $scope.contacts = ContactService.list();
     
     $scope.del = function (id) {
@@ -70,13 +70,17 @@ module.controller('ContactController', function ($scope, ContactService) {
         if ($scope.newcontact.id == id) $scope.newcontact = {};
     }
     
-    // Functions for modal management
+    $scope.login = function() {
+    	 $scope.authenticationModal = true;	 
+    };
+    
+    /* Functions for modal management */
+    
     $scope.add = function() {
     	 $("#modal-title").text("New Contact");
     	 $scope.showModal = true;
     };
     
- // Functions for modal management
     $scope.edit = function(id) {
     	$scope.showModal = true;
     	$("#modal-title").text("Edit Contact");
