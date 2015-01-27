@@ -61,7 +61,7 @@ module.service('ContactService', function () {
 });
 
 module.controller('ContactController', function ($scope, ContactService) {
-	 
+	
     $scope.contacts = ContactService.list();
     
     $scope.del = function (id) {
@@ -70,14 +70,20 @@ module.controller('ContactController', function ($scope, ContactService) {
         if ($scope.newcontact.id == id) $scope.newcontact = {};
     }
     
-    // Functions for modal management
-    $scope.add = function() {
-    	$scope.showModal = true;
+    $scope.login = function() {
+    	 $scope.authenticationModal = true;	 
     };
     
- // Functions for modal management
+    /* Functions for modal management */
+    
+    $scope.add = function() {
+    	 $("#modal-title").text("New Contact");
+    	 $scope.showModal = true;
+    };
+    
     $scope.edit = function(id) {
     	$scope.showModal = true;
+    	$("#modal-title").text("Edit Contact");
     	$scope.newcontact = angular.copy(ContactService.get(id));
     };
     
@@ -85,10 +91,12 @@ module.controller('ContactController', function ($scope, ContactService) {
     	ContactService.save($scope.newcontact);
         $scope.newcontact = {};
     	$scope.showModal = false;
+    	$scope.newcontact = {};
     };
     
     $scope.cancel = function() {
     	$scope.showModal = false;
+    	$scope.newcontact = {};
     };
     
 })
