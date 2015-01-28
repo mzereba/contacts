@@ -39,54 +39,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div modal="showModal" close="cancel()">
-			<div class="modal-header">
-				<h4 id="modal-title"></h4>
-			</div>
-			<div class="modal-body">
-				<form>
-				    <label>Name</label>
-				       <input name="name" ng-model="newcontact.name" type="text">
-				    <label>Email</label>
-				       <input name="email" ng-model="newcontact.email" type="text">
-				    <label>Phone</label>
-				       <input name="phone" ng-model="newcontact.phone" type="text">
-				    <input ng-model="newcontact.id" type="hidden">
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-success" ng-click="save()">Save</button>
-				<button class="btn" ng-click="cancel()">Cancel</button>
-			</div>
-		</div>
-		<div modal="authenticationModal" close="cancel()">
-			<div class="modal-header">
-				<h4 id="modal-title">WebID Authentication</h4>
-			</div>
-			<div class="modal-body">
-			    <script>
-			        // Listen to WebIDAuth events
-			        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-					var eventListener = window[eventMethod];
-					var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-			        window.eventListener(messageEvent,function(e) {
-					    if (e.data.slice(0,5) == 'User:') {
-					      console.log(e.data);
-					      // fetch user data after login
-					      //$scope.login(e.data.slice(5, e.data.length), true);
-					    }
-					    if (e.data.slice(0,6) == "cancel") {
-					      $scope.showLogin = false;
-					      $scope.$apply();
-					    }
-					  },false);
-			    </script>
-			    <iframe ng-src="{{widgetURI}}" sandbox="allow-same-origin allow-scripts" width="525px" height="300px" style="border: 0px"></iframe>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-success" ng-click="#">Save</button>
-				<button class="btn" ng-click="close()">Cancel</button>
-			</div>
-		</div>
+		<div modal="editContactModal" ng-include="'templates/editContactModal.htm'" close="cancel()" ></div>
+		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="cancel()"></div>
 	</body>
 </html>
