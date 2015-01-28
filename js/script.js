@@ -81,24 +81,23 @@ module.controller('ContactController', function ($scope, $sce, ContactService) {
     
     $scope.add = function() {
     	 $("#modal-title").text("New Contact");
-    	 $scope.showModal = true;
+    	 $scope.editContactModal = true;
     };
     
     $scope.edit = function(id) {
-    	$scope.showModal = true;
     	$("#modal-title").text("Edit Contact");
+    	$scope.editContactModal = true;
     	$scope.newcontact = angular.copy(ContactService.get(id));
     };
     
     $scope.save = function() {
     	ContactService.save($scope.newcontact);
-        $scope.newcontact = {};
-    	$scope.showModal = false;
+    	$scope.editContactModal = false;
     	$scope.newcontact = {};
     };
     
     $scope.cancel = function() {
-    	$scope.showModal = false;
+    	$scope.editContactModal = false;
     	$scope.newcontact = {};
     };
     
