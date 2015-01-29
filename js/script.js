@@ -63,6 +63,7 @@ module.service('ContactService', function () {
 module.controller('ContactController', function ($scope, $sce, ContactService) {
 	
     $scope.contacts = ContactService.list();
+    $scope.modalTitle = '';
     
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
@@ -80,12 +81,12 @@ module.controller('ContactController', function ($scope, $sce, ContactService) {
     /* Functions for modal management */
     
     $scope.add = function() {
-    	 $("#modal-title").text("New Contact");
+    	 $scope.modalTitle = "New Contact";
     	 $scope.editContactModal = true;
     };
     
     $scope.edit = function(id) {
-    	$("#modal-title").text("Edit Contact");
+    	$scope.modalTitle = "Edit Contact";
     	$scope.editContactModal = true;
     	$scope.newcontact = angular.copy(ContactService.get(id));
     };
@@ -96,14 +97,35 @@ module.controller('ContactController', function ($scope, $sce, ContactService) {
     	$scope.newcontact = {};
     };
     
-    $scope.cancel = function() {
+    $scope.closeEditor = function() {
     	$scope.editContactModal = false;
     	$scope.newcontact = {};
     };
     
-    $scope.close = function() {
+    $scope.closeAuth = function() {
     	$scope.authenticationModal = false;
+        // modal won't close unless we force $apply()
+        $scope.$apply();
     };
     
+    $scope.authenticate = function(webid) {
+        if (webid.slice(0,4) == 'http') {
+            console.log("Authenticated user: "+webid);
+        } else {
+            console.log("Authentication failed: "+webid);
+        }
+    }
+
+    // Listen to WebIDAuth events
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventListener = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventListener(messageEvent,function(e) {
+        if (e.data.slice(0,5) == 'User:') {          
+          // fetch user data after login
+          $scope.authenticate(e.data.slice(5, e.data.length));
+        }
+        $scope.closeAuth();
+      },false);
 })
 
