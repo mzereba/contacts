@@ -11,6 +11,7 @@
 		    if (e.data.slice(0,5) == 'User:') {
 		      console.log(e.data);
 		      // fetch user data after login
+		      user = e.data.slice(5);
 		      //$scope.login(e.data.slice(5, e.data.length), true);
 		    }
 		    if (e.data.slice(0,6) == "cancel") {

@@ -33,6 +33,22 @@ module.service('ContactService', function () {
             }
         }
     }
+    
+    this.saveNew = function (contact) {
+        if (contact.id == null) {
+            //if this is new contact, add it in contacts array
+            contact.id = uid++;
+            putVCard(contact);
+        } else {
+            //for existing contact, find this contact using id
+            //and update it.
+            for (i in contacts) {
+                if (contacts[i].id == contact.id) {
+                	putVCard(contact);
+                }
+            }
+        }
+    }
      
     //simply search contacts list for given id
     //and returns the contact object if found
