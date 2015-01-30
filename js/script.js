@@ -6,7 +6,7 @@
 
 var module = angular.module('Contacts', ["ui.bootstrap.modal"]);
 
-module.service('ContactService', [function ($http) {
+module.service('ContactService', function ($http) {
     //to create unique contact id
     var uid = 1;
      
@@ -98,16 +98,16 @@ module.service('ContactService', [function ($http) {
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
             // Add resource to the list
-            notify('Success', 'Resource created.');
+            console.log('Success: Resource created.');
           }
         }).
         error(function(data, status) {
           if (status == 401) {
-            notify('Forbidden', 'Authentication required to create new resource.');
+            console.log('Forbidden: Authentication required to create new resource.');
           } else if (status == 403) {
-            notify('Forbidden', 'You are not allowed to create new resource.');
+            console.log('Forbidden: You are not allowed to create new resource.');
           } else {
-            notify('Failed '+ status, data);
+            console.log('Failed '+ status + data);
           }
         }); 
     }
@@ -121,10 +121,9 @@ module.service('ContactService', [function ($http) {
                 "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + ">.";
         return rdf;
     }
-}]);
+});
 
 module.controller('ContactController', function ($scope, $http, $sce, ContactService) {
-	
     $scope.contacts = ContactService.list();
     $scope.modalTitle = '';
     
