@@ -7,14 +7,13 @@
 
 		<script src="js/angular-ui-bootstrap-modal.js"></script>
 		<script src="js/script.js"></script>
-		<script src="js/jquery.min.js"></script>
 		
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="css/bootstrap.css" />
 	</head>
 	<body ng-app="Contacts" ng-controller="ContactController">
 		<div id="header">
-			Contacts Manager </button><button class="btn btn-login block" ng:click="login()">Authenticate</button><button class="btn btn-success block" ng:click="add()">New Contact
+			Contacts Manager </button><button class="btn btn-login block" ng-click="login()">Authenticate</button><button class="btn btn-success block" ng-click="add()">New Contact
 		</div>
 		<div id="content">
 			<table class="bordered">
@@ -39,7 +38,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div modal="editContactModal" ng-include="'templates/editContactModal.htm'" close="cancel()" ></div>
-		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="cancel()"></div>
+		<div modal="editContactModal" ng-include="'templates/editContactModal.htm'" close="closeEditor()"></div>
+		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="closeAuth()"></div>
 	</body>
 </html>
