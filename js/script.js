@@ -6,7 +6,7 @@
 
 var module = angular.module('Contacts', ["ui.bootstrap.modal"]);
 
-module.service('ContactService', function () {
+module.service('ContactService', ['$http', function () {
     //to create unique contact id
     var uid = 1;
      
@@ -74,9 +74,9 @@ module.service('ContactService', function () {
     this.list = function () {
         return contacts;
     }
-});
+}]);
 
-module.controller('ContactController', function ($scope, $sce, ContactService) {
+module.controller('ContactController', function ($scope, $http, $sce, ContactService) {
 	
     $scope.contacts = ContactService.list();
     $scope.modalTitle = '';
@@ -107,8 +107,9 @@ module.controller('ContactController', function ($scope, $sce, ContactService) {
     	$scope.newcontact = angular.copy(ContactService.get(id));
     };
     
-    $scope.save = function() {
-    	ContactService.save($scope.newcontact);
+    $scope.save = function(newcontact) {
+    	//ContactService.save($scope.newcontact);
+    	ContactService.save(newcontact);
     	$scope.editContactModal = false;
     	$scope.newcontact = {};
     };
