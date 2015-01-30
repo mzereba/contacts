@@ -2,26 +2,8 @@
 	<h4 id="modal-title">WebID Authentication</h4>
 </div>
 <div class="modal-body">
-    <script>
-        // Listen to WebIDAuth events
-        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-		var eventListener = window[eventMethod];
-		var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-        window.eventListener(messageEvent,function(e) {
-		    if (e.data.slice(0,5) == 'User:') {
-		      console.log(e.data);
-		      // fetch user data after login
-		      //$scope.login(e.data.slice(5, e.data.length), true);
-		    }
-		    if (e.data.slice(0,6) == "cancel") {
-		      $scope.showLogin = false;
-		      $scope.$apply();
-		    }
-		  },false);
-    </script>
     <iframe ng-src="{{widgetURI}}" sandbox="allow-same-origin allow-scripts" width="525px" height="300px" style="border: 0px"></iframe>
 </div>
 <div class="modal-footer">
-	<button class="btn btn-success" ng-click="#">Save</button>
-	<button class="btn" ng-click="close()">Cancel</button>
+	<button class="btn" ng-click="closeAuth()">Cancel</button>
 </div>
