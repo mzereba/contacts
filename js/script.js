@@ -82,8 +82,9 @@ module.service('ContactService', [function ($http) {
 
     function putVCard(contact){
     //  var d = new Date();
-    //  var timestamp = d.getTime(); 
-        var card = createVCard(contact);
+    //  var timestamp = d.getTime();
+    	var uri = storage + prefix + contact.id;
+        var card = createVCard(contact, uri);
         $http({
           method: 'PUT', 
           url: uri,
@@ -111,8 +112,7 @@ module.service('ContactService', [function ($http) {
         }); 
     }
 
-    function createVCard(contact){
-        var uri = storage + prefix + contact.id;
+    function createVCard(contact, uri){
         var rdf = "";
         rdf =   "<" + uri + ">" +
                 "a <http://www.w3.org/2006/vcard/ns#Individual> ;" +
