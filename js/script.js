@@ -96,7 +96,6 @@ module.service('ContactService', function ($http) {
 		    }
 		}
 
-	        //App.render();
 	    });
         	
     }
