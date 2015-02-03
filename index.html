@@ -30,12 +30,12 @@
 				</thead>
 				<tbody>
 				<tr ng-repeat="contact in contacts">
-				    <td>{{ contact.name }}</td>
+				    <td>{{ contact.fullname }}</td>
 				    <td>{{ contact.email }}</td>
 				    <td>{{ contact.phone }}</td>
 				    <td>
 				        <a href="#" ng-click="edit(contact.id)">edit</a> |
-				        <a href="#" ng-click="del(contact.id)">delete</a>
+				        <a href="#" ng-click="remove(contact.id)">delete</a>
 				    </td>
 				 </tr>
 				</tbody>
