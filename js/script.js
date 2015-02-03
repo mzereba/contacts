@@ -142,9 +142,9 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 	
 				var contact = {
 				    id: id.slice(id.length-1),
-				    fullname: fullname,
-				    email: email,
-				    phone: phone 
+				    Name: fullname,
+				    Email: email,
+				    Phone: phone 
 				};
 				
 				$scope.contacts.push(contact);
@@ -152,6 +152,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 		}
 
 	    });
+	    
     };
     
     // Function to insert or update a contact resource
