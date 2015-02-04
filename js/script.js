@@ -123,8 +123,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	//$scope.getContactsList();
     	var g = $rdf.graph();
 	    var f = $rdf.fetcher(g);
-	    var list = [];
-	    f.nowOrWhenFetched($scope.path + '*',undefined,function(){
+	    
+	    f.nowOrWhenFetched($scope.path + '*',undefined,function(){	
 		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
 			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
@@ -145,13 +145,12 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 					    Email: email,
 					    Phone: phone 
 					};
-					list.push(contact);
+
 					$scope.contacts.push(contact);
 			    }
-			    
-			   $scope.$apply();
 			}
 			
+			$scope.$apply();
 	    });
     };
     
