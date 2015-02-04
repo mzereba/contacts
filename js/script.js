@@ -17,18 +17,13 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
-
-    // Simply returns the contacts list
-    $scope.list = function () {
-        return contacts;
-    };
     
     // Simply search contacts list for given id
     // and returns the contact object if found
     $scope.get = function (id) {
-        for (i in contacts) {
-            if (contacts[i].id == id) {
-                return contacts[i];
+        for (i in $scope.contacts) {
+            if ($scope.contacts[i].id == id) {
+                return $scope.contacts[i];
             }
         }
     };
@@ -76,8 +71,6 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.closeAuth = function() {
     	$scope.authenticationModal = false;
-        // modal won't close unless we force $apply()
-        $scope.$apply();
     };
     
     $scope.authenticate = function(webid) {
@@ -141,16 +134,14 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 		
 					var contact = {
 					    id: id.slice(id.length-1),
-					    Name: fullname,
-					    Email: email,
-					    Phone: phone 
+					    fullname: fullname,
+					    email: email,
+					    phone: phone 
 					};
-
 					$scope.contacts.push(contact);
-			    }
+                    $scope.$apply();
+                }
 			}
-			
-			$scope.$apply();
 	    });
     };
     
