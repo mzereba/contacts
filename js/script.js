@@ -11,8 +11,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.modalTitle = '';
     
     $scope.user = '';	// 'https://mzereba.rww.io/profile/card#me'
-    $scope.path = '';	//	'http://mzereba.rww.io/storage/contacts/';
-    //$scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
+    $scope.path1 = '';	//	'http://mzereba.rww.io/storage/contacts/';
+    $scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
     $scope.prefix = "vcard_";
     
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
@@ -237,7 +237,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         if (e.data.slice(0,5) == 'User:') {          
           $scope.authenticate(e.data.slice(5, e.data.length));
           $scope.user = e.data.slice(5);
-          $scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+          $scope.path1 = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
         }
         $scope.closeAuth();
         //Fetch user data after login
