@@ -11,24 +11,19 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.modalTitle = '';
     
     $scope.user = '';	// 'https://mzereba.rww.io/profile/card#me'
-    $scope.path1 = '';	//	'http://mzereba.rww.io/storage/contacts/';
-    $scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
+    $scope.path = '';	//	'http://mzereba.rww.io/storage/contacts/';
+    //$scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
     $scope.prefix = "vcard_";
     
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
-
-    // Simply returns the contacts list
-    $scope.list = function () {
-        return contacts;
-    };
     
     // Simply search contacts list for given id
     // and returns the contact object if found
     $scope.get = function (id) {
-        for (i in contacts) {
-            if (contacts[i].id == id) {
-                return contacts[i];
+        for (i in $scope.contacts) {
+            if ($scope.contacts[i].id == id) {
+                return $scope.contacts[i];
             }
         }
     };
@@ -53,13 +48,13 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.save = function(newcontact) {
     	if (newcontact.id == null) {
             //if this is new contact, add it in contacts array
-            newcontact.id = contacts.length;
+            newcontact.id = $scope.contacts.length;
             $scope.insertContact(newcontact);
         } else {
             //for existing contact, find this contact using id
             //and update it.
             for (i in newcontact) {
-                if (contacts[i].id == newcontact.id) {
+                if ($scope.contacts[i].id == newcontact.id) {
                 	$scope.insertContact(newcontact);
                 }
             }
@@ -76,8 +71,6 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.closeAuth = function() {
     	$scope.authenticationModal = false;
-        // modal won't close unless we force $apply()
-        $scope.$apply();
     };
     
     $scope.authenticate = function(webid) {
@@ -141,16 +134,14 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 		
 					var contact = {
 					    id: id.slice(id.length-1),
-					    Name: fullname,
-					    Email: email,
-					    Phone: phone 
+					    fullname: fullname,
+					    email: email,
+					    phone: phone 
 					};
-
 					$scope.contacts.push(contact);
-			    }
+                    $scope.$apply();
+                }
 			}
-			
-			$scope.$apply();
 	    });
     };
     
@@ -246,7 +237,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         if (e.data.slice(0,5) == 'User:') {          
           $scope.authenticate(e.data.slice(5, e.data.length));
           $scope.user = e.data.slice(5);
-          $scope.path1 = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+          $scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
         }
         $scope.closeAuth();
         //Fetch user data after login
