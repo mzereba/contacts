@@ -235,14 +235,13 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
     eventListener(messageEvent,function(e) {
         if (e.data.slice(0,5) == 'User:') {          
-          $scope.authenticate(e.data.slice(5, e.data.length));
-          $scope.user = e.data.slice(5);
-          $scope.path1 = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            $scope.authenticate(e.data.slice(5, e.data.length));
+            $scope.user = e.data.slice(5);
+            $scope.path1 = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            //Fetch user data after login
+            $scope.load();
         }
         $scope.closeAuth();
-        //Fetch user data after login
-        $scope.load();
-        
       },false);
 });
 
