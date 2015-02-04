@@ -11,8 +11,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.modalTitle = '';
     
     $scope.user = '';	// 'https://mzereba.rww.io/profile/card#me'
-    $scope.path = '';	//	'http://mzereba.rww.io/storage/contacts/';
-    //$scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
+    $scope.path1 = '';	//	'http://mzereba.rww.io/storage/contacts/';
+    $scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
     $scope.prefix = "vcard_";
     
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
@@ -48,13 +48,13 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.save = function(newcontact) {
     	if (newcontact.id == null) {
             //if this is new contact, add it in contacts array
-            newcontact.id = $scope.contacts.length;
+            newcontact.id = contacts.length;
             $scope.insertContact(newcontact);
         } else {
             //for existing contact, find this contact using id
             //and update it.
             for (i in newcontact) {
-                if ($scope.contacts[i].id == newcontact.id) {
+                if (contacts[i].id == newcontact.id) {
                 	$scope.insertContact(newcontact);
                 }
             }
@@ -71,6 +71,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.closeAuth = function() {
     	$scope.authenticationModal = false;
+        $scope.$apply();
     };
     
     $scope.authenticate = function(webid) {
@@ -235,14 +236,13 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
     eventListener(messageEvent,function(e) {
         if (e.data.slice(0,5) == 'User:') {          
-          $scope.authenticate(e.data.slice(5, e.data.length));
-          $scope.user = e.data.slice(5);
-          $scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            $scope.authenticate(e.data.slice(5, e.data.length));
+            $scope.user = e.data.slice(5);
+            $scope.path1 = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            //Fetch user data after login
+            $scope.load();
         }
-        $scope.closeAuth();
-        //Fetch user data after login
-        $scope.load();
-        
+        $scope.closeAuth();        
       },false);
 });
 
