@@ -123,36 +123,36 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	//$scope.getContactsList();
     	var g = $rdf.graph();
 	    var f = $rdf.fetcher(g);
-	    
+	    var list = [];
 	    f.nowOrWhenFetched($scope.path + '*',undefined,function(){
-
-	    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
-		var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-		var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
-		//var myOntology = $rdf.Namespace('http://user.pds.org/ontology/'); 
-		var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
+			//var myOntology = $rdf.Namespace('http://user.pds.org/ontology/'); 
+			var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+			
+			var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
+			if (evs != undefined) {
+			    for (var e in evs) {
+					var id = evs[e]['subject']['value'];
+					var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+					var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
+					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
 		
-		var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
-		if (evs != undefined) {
-		    for (var e in evs) {
-				var id = evs[e]['subject']['value'];
-				var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
-				var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
-				var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
-	
-				var contact = {
-				    id: id.slice(id.length-1),
-				    Name: fullname,
-				    Email: email,
-				    Phone: phone 
-				};
-				
-				$scope.contacts.push(contact);
-		    }
-		}
-
+					var contact = {
+					    id: id.slice(id.length-1),
+					    Name: fullname,
+					    Email: email,
+					    Phone: phone 
+					};
+					list.push(contact);
+					$scope.contacts.push(contact);
+			    }
+			    
+			   $scope.$apply();
+			}
+			
 	    });
-	    
     };
     
     // Function to insert or update a contact resource
