@@ -110,7 +110,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	      }
     	});
     	
-        //if ($scope.newcontact.id == id) $scope.newcontact = {};
+        if ($scope.newcontact.id == id) $scope.newcontact = {};
     };
     
     // Listing contact resources
