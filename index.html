@@ -3,24 +3,25 @@
 <html>
 	<head>
 		<title>Contacts Manager</title>
-		<script src="js/angular/angular.js"></script>
+		<script src="js/angular/angular.min.js"></script>
 		<script src="js/angular/angular-ui-bootstrap-modal.js"></script>
+		<script src="js/angular/angular-animate.js"></script>
 		<!-- <script src="js/jquery/jquery.min.js"></script> -->
-		<script src="js/rdflib/rdflib.js"></script>
+		<script src="js/rdflib/rdflib.min.js"></script>
 		
 		<script src="js/script.js"></script>
-		<!-- <script src="js/io.js"></script> -->
 		
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="css/bootstrap.css" />
 	</head>
-	<body ng-app="Contacts" ng-controller="ContactController">
+	<body ng-app="Contacts" ng-controller="ContactController" ng-init="list = contacts">
 		<div id="header">
-			Contacts Manager </button><button class="btn btn-login block" ng-click="login()">Authenticate</button><button class="btn btn-success block" ng-click="add()">New Contact
+			Contacts Manager <button class="btn btn-login block" ng-click="login()">Authenticate</button><button class="btn btn-success block" ng-click="add()">New Contact</button><input class="block"type="search" ng-model="q" placeholder="filter contacts..." />
 		</div>
-		<div id="content">
-			<table class="bordered">
-				<thead>
+		<div id="content" >
+  			
+			<table class="example-animate-container bordered">
+		        <thead>
 				<tr>
 				    <th>Name</th>
 				    <th>Email</th>
@@ -29,17 +30,20 @@
 				</tr>
 				</thead>
 				<tbody>
-				<tr ng-repeat="contact in contacts track by contact.id">
-				    <td>{{ contact.fullname }}</td>
-				    <td>{{ contact.email }}</td>
-				    <td>{{ contact.phone }}</td>
-				    <td>
-				        <a href="#" ng-click="edit(contact.id)">edit</a> |
-				        <a href="#" ng-click="remove(contact.id)">delete</a>
-				    </td>
-				 </tr>
-				</tbody>
-			</table>
+		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results">
+		          <td>{{contact.fullname}}</td>
+		          <td>{{contact.email }}</td>
+				  <td>{{contact.phone }}</td>
+				  <td>
+				      <a href="#" ng-click="edit(contact.id)">edit</a> |
+				      <a href="#" ng-click="remove(contact.id)">delete</a>
+				  </td>
+		        </tr>
+		        <tr class="animate-repeat" ng-if="results.length == 0">
+		          <td colspan="4"><strong>No results found...</strong></td>
+		        </tr>
+		        </tbody>
+		    </table>
 		</div>
 		<div modal="editContactModal" ng-include="'templates/editContactModal.htm'" close="cancel()" ></div>
 		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="cancel()"></div>
