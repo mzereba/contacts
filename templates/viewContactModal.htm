@@ -1,0 +1,16 @@
+<div class="modal-header">
+	<h4 id="modal-title">{{modalTitle}}</h4>
+</div>
+<div class="modal-body">
+	<form>
+	    <label>Name</label>
+	       <p name="name" ng-model="viewcontact.fullname" type="text">{{viewcontact.fullname}}</p>
+	    <label>Email</label>
+	       <p name="email" ng-model="viewcontact.email" type="text"><a href="mailto:{{viewcontact.email}}">{{viewcontact.email}}</a></p>
+	    <label>Phone</label>
+	       <p name="phone" ng-model="viewcontact.phone" type="text">{{viewcontact.phone}}</p>
+	</form>
+</div>
+<div class="modal-footer">
+	<button class="btn" ng-click="closeViewer()">Cancel</button>
+</div>
