@@ -2,9 +2,10 @@
 
 <html>
 	<head>
-		<title>Contacts Manager</title>
+		<title>PaCM | Profile and Contact Manager</title>
 		<script src="js/angular/angular.min.js"></script>
 		<script src="js/angular/angular-ui-bootstrap-modal.js"></script>
+		<script src="js/angular/angular-ui-bootstrap-dropdown.js"></script>
 		<script src="js/angular/angular-animate.js"></script>
 		<!-- <script src="js/jquery/jquery.min.js"></script> -->
 		<script src="js/rdflib/rdflib.min.js"></script>
@@ -16,36 +17,48 @@
 	</head>
 	<body ng-app="Contacts" ng-controller="ContactController" ng-init="list = contacts">
 		<div id="header">
-			Contacts Manager <button class="btn btn-login block" ng-click="login()">Authenticate</button><button class="btn btn-success block" ng-click="add()">New Contact</button><input class="block"type="search" ng-model="q" placeholder="filter contacts..." />
+			PaCM <button class="btn btn-login block" ng-click="login()">Authenticate</button>
+			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
+				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+					My Profile <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#" ng-click="viewProfile()">View Profile</a></li>
+				  	<li><a href="#" ng-click="editProfile()">Edit Profile</a></li>
+				</ul>
+			</div>
+			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." />
+			<button class="btn btn-success block" ng-click="add()">New Contact</button>
 		</div>
-		<div id="content" >
-  			
+		 <div id="content" >
+		    <p class="contactsTitle">My Contacts&nbsp;</p>
+		    <p class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</p><p class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</p>
 			<table class="example-animate-container bordered">
 		        <thead>
 				<tr>
 				    <th>Name</th>
-				    <th>Email</th>
-				    <th>Phone</th>
 				    <th>Action</th>
 				</tr>
 				</thead>
 				<tbody>
-		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results">
+		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results" ng-if="contact.id != 0">
 		          <td>{{contact.fullname}}</td>
-		          <td>{{contact.email }}</td>
-				  <td>{{contact.phone }}</td>
 				  <td>
+				  	  <a href="#" ng-click="view(contact.id)">view</a> |
 				      <a href="#" ng-click="edit(contact.id)">edit</a> |
 				      <a href="#" ng-click="remove(contact.id)">delete</a>
 				  </td>
 		        </tr>
-		        <tr class="animate-repeat" ng-if="results.length == 0">
-		          <td colspan="4"><strong>No results found...</strong></td>
+		        <tr class="animate-repeat" ng-if="results.length == 0 || (results.length == 1 && results[0].id == 0)">
+		          <td colspan="2"><strong>No results found...</strong></td>
 		        </tr>
 		        </tbody>
 		    </table>
 		</div>
+		<div modal="viewContactModal" ng-include="'templates/viewContactModal.htm'" close="cancel()" ></div>
 		<div modal="editContactModal" ng-include="'templates/editContactModal.htm'" close="cancel()" ></div>
 		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="cancel()"></div>
+		<div modal="editProfileModal" ng-include="'templates/editProfileModal.htm'" close="cancel()" ></div>
+		<div modal="viewProfileModal" ng-include="'templates/viewProfileModal.htm'" close="cancel()" ></div>
 	</body>
 </html>

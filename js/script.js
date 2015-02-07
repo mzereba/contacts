@@ -4,20 +4,34 @@
  * @author mzereba
  */
 
-var module = angular.module('Contacts', ["ui.bootstrap.modal"]);
+var module = angular.module('Contacts', ['ui.bootstrap.modal', 'ui.bootstrap.dropdown']);
 
 module.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
     $scope.modalTitle = '';
     
     $scope.user = '';	// 'https://mzereba.rww.io/profile/card#me'
-    $scope.path = '';	//	'http://mzereba.rww.io/storage/contacts/';
+    $scope.path = '';	// 'http://mzereba.rww.io/storage/contacts/';
     //$scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
     $scope.prefix = "vcard_";
     
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
     
+    $scope.status = {
+    	    isopen: false
+	};
+
+	$scope.toggled = function(open) {
+		$log.log('Dropdown is now: ', open);
+	};
+
+	$scope.toggleDropdown = function($event) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		$scope.status.isopen = !$scope.status.isopen;
+	};
+        
     // Simply search contacts list for given id
     // and returns the contact object if found
     $scope.get = function (id) {
@@ -36,11 +50,45 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	 $scope.modalTitle = "New Contact";
     	 $scope.editContactModal = true;
     };
-       
+    
+    $scope.addProfile = function() {
+    	$scope.modalTitle = "Create Profile";
+    	$scope.noteTitle = "Warning: you currently do not have a profile, please create one!";
+    	$scope.editProfileModal = true;
+    };
+    
     $scope.edit = function(id) {
     	$scope.modalTitle = "Edit Contact";
     	$scope.editContactModal = true;
     	$scope.newcontact = angular.copy($scope.get(id));
+    };
+    
+    $scope.editProfile = function() {
+    	$scope.contact = angular.copy($scope.get(0));
+    	if($scope.contact == undefined){
+   			$scope.addProfile();
+   		}else{
+	    	$scope.modalTitle = "Edit Profile";
+	    	$scope.editProfileModal = true;
+	    	$scope.newcontact = angular.copy($scope.get(0));
+   		}
+    };
+    
+    $scope.view = function(id) {
+   		$scope.modalTitle = "View Contact";
+    	$scope.viewContactModal = true;
+    	$scope.viewcontact = angular.copy($scope.get(id));
+    };
+    
+    $scope.viewProfile = function() {
+    	$scope.contact = angular.copy($scope.get(0));
+    	if($scope.contact == undefined){
+   			$scope.addProfile();
+   		}else{
+	    	$scope.modalTitle = "Me";
+	    	$scope.viewProfileModal = true;
+	    	$scope.viewcontact = angular.copy($scope.get(0));
+   		}
     };
     
     $scope.save = function(newcontact) {
@@ -61,10 +109,43 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.editContactModal = false;
     	$scope.newcontact = {};
     };
+        
+    $scope.saveProfile = function(newcontact) {
+    	if (newcontact.id == null) {
+            //if this is new contact, add it in contacts array
+            newcontact.id = 0; // Generate unique id
+            $scope.insertContact(newcontact);
+        } else {
+            //for existing contact, find this contact using id
+            //and update it.
+            for (i in $scope.contacts) {
+                if ($scope.contacts[i].id == newcontact.id) {
+                	$scope.insertContact(newcontact);
+                }
+            }
+        }
+    	
+    	$scope.editProfileModal = false;
+    	$scope.newcontact = {};
+    };
     
     $scope.closeEditor = function() {
     	$scope.editContactModal = false;
     	$scope.newcontact = {};
+    };
+    
+    $scope.closeProfileEditor = function() {
+    	$scope.editProfileModal = false;
+    	$scope.newcontact = {};
+    };
+    
+    $scope.closeViewer = function() {
+    	$scope.viewContactModal = false;
+    	$scope.viewcontact = {};
+    };
+    $scope.closeProfileViewer = function() {
+    	$scope.viewProfileModal = false;
+    	$scope.viewcontact = {};
     };
     
     $scope.closeAuth = function() {
@@ -78,41 +159,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
             console.log("Authentication failed: "+webid);
         }
     };
-    
-    // Iterate through contacts list and delete
-    // contact if found
-    $scope.remove = function (id) {
-        contactUri = $scope.path + $scope.prefix + id;
-    	$http({
-    	      method: 'DELETE',
-    	      url: contactUri,
-    	      withCredentials: true
-    	    }).
-    	    success(function(data, status, headers) {
-    	      if (status == 200) {
-    	    	console.log('Success', 'Deleted '+contactUri);
-    	    	// remove resource from the view
-    	        //$scope.removeContact(id, contactUri);
-    	        // Update view
-                $scope.contacts.length = 0;
-                $scope.load();
-    	      }
-    	    }).
-    	    error(function(data, status) {
-    	      if (status == 401) {
-    	    	  console.log('Forbidden', 'Authentication required to delete '+resourceUri);
-    	      } else if (status == 403) {
-    	    	  console.log('Forbidden', 'You are not allowed to delete '+resourceUri);
-    	      } else if (status == 409) {
-    	    	  console.log('Failed', 'Conflict detected. In case of directory, check if not empty.');
-    	      } else {
-    	    	  console.log('Failed '+status, data);
-    	      }
-    	});
-    	
-        if ($scope.newcontact.id == id) $scope.newcontact = {};
-    };
-    
+        
     // Listing contact resources
     $scope.load = function () {
 		var g = $rdf.graph();
@@ -129,16 +176,21 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 			if (evs != undefined) {
 				for (var e in evs) {
 					var id = evs[e]['subject']['value'];
-					var s = id.split("_"); 
+					var sId = id.split("_"); 
+					
 					var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+					
 					var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
+					var sEmail = email.split(":");
+					
 					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
+					var sPhone = phone.split(":");
 					
 					var contact = {
-					    id: s[1],
+					    id: sId[1],
 					    fullname: fullname,
-					    email: email,
-					    phone: phone 
+					    email: sEmail[1],
+					    phone: sPhone[1] 
 					};
 					$scope.contacts.push(contact);
                     $scope.$apply();
@@ -180,35 +232,38 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         });
     };
     
+    // Iterate through contacts list and delete
+    // contact if found
+    $scope.remove = function (id) {
+        contactUri = $scope.path + $scope.prefix + id;
+    	$http({
+    	      method: 'DELETE',
+    	      url: contactUri,
+    	      withCredentials: true
+    	    }).
+    	    success(function(data, status, headers) {
+    	      if (status == 200) {
+    	    	console.log('Success', 'Deleted '+contactUri);
+    	        // Update view
+                $scope.contacts.length = 0;
+                $scope.load();
+    	      }
+    	    }).
+    	    error(function(data, status) {
+    	      if (status == 401) {
+    	    	  console.log('Forbidden', 'Authentication required to delete '+resourceUri);
+    	      } else if (status == 403) {
+    	    	  console.log('Forbidden', 'You are not allowed to delete '+resourceUri);
+    	      } else if (status == 409) {
+    	    	  console.log('Failed', 'Conflict detected. In case of directory, check if not empty.');
+    	      } else {
+    	    	  console.log('Failed '+status, data);
+    	      }
+    	});
+    	
+        if ($scope.newcontact.id == id) $scope.newcontact = {};
+    };
     
-//    $scope.getContactsList = function() {
-//    	var uri = path + "*";
-//        $http({
-//            method: 'GET', 
-//            url: uri,
-//            data: '',
-//            headers: {
-//              'Accept': 'text/turtle',
-//            },
-//            withCredentials: true
-//          }).
-//          success(function(data, status, headers) {
-//            if (status == 200 || status == 201) {
-//            	//contacts = data;
-//            	console.log('Success', 'Resource retrieved.');
-//            }
-//          }).
-//          error(function(data, status) {
-//            if (status == 401) {
-//            	console.log('Forbidden', 'Authentication required to edit the resource.');
-//            } else if (status == 403) {
-//            	console.log('Forbidden', 'You are not allowed to edit the resource.');
-//            } else {
-//            	console.log('Failed '+status, data);
-//            }
-//         }); 
-//    };
-
     // Composes an RDF resource to send to the server
     $scope.composeRDFResource = function (contact, uri) {
         var rdf =   "<" + uri + ">\n" +
@@ -218,19 +273,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
                 "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> .\n";
         return rdf;
     };
-    
-    // Removes a contact resource from the list
-    $scope.removeContact = function (id, contactUri) {
-        if ($scope.contacts) {
-          for(var i = $scope.contacts.length - 1; i >= 0; i--){
-            if($scope.contacts[i].id == id) {
-              $scope.contacts.splice(i,1);
-              console.log('Success', 'Deleted '+contactUri);
-            }
-          }
-        }
-    };
-    
+       
     // Listen to WebIDAuth events
     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
     var eventListener = window[eventMethod];
@@ -240,10 +283,12 @@ module.controller('ContactController', function ($scope, $http, $sce) {
             $scope.authenticate(e.data.slice(5, e.data.length));
             $scope.user = e.data.slice(5);
             $scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            
             //Fetch user data after login
             $scope.load();
         }
+        
         $scope.closeAuth();
-      },false);
+    },false);
 });
 

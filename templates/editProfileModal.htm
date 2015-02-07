@@ -1,0 +1,19 @@
+<div class="modal-header">
+	<h4 id="modal-title">{{modalTitle}}</h4>
+</div>
+<div class="modal-body">
+	<form>
+	    <label>Name</label>
+	       <input name="name" ng-model="newcontact.fullname" type="text">
+	    <label>Email</label>
+	       <input name="email" ng-model="newcontact.email" type="text">
+	    <label>Phone</label>
+	       <input name="phone" ng-model="newcontact.phone" type="text">
+	    <input ng-model="newcontact.id" type="hidden">
+	</form>
+	<p class="noteTitle" id="note-Title">{{noteTitle}}</p>
+</div>
+<div class="modal-footer">
+<button class="btn btn-success" ng-click="saveProfile(newcontact)">Save</button>
+	<button class="btn" ng-click="closeProfileEditor()">Cancel</button>
+</div>

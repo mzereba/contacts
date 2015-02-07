@@ -3,28 +3,27 @@
  * style.css 
  * @author mzereba
  */
- 
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+html,body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  color: #333333;
-  background-color: #F8F8F8;;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	color: #333333;
+	background-color: #F8F8F8;;
 }
- 
+
 * {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 18px;
 }
-#header {
-	/*padding-top: 5px;*/
+
+#header { /*padding-top: 5px;*/
 	/*padding-bottom: 10px;*/
 	/*border-bottom: solid 1px #AAAAAA;*/
 	padding-left: 10px;
@@ -33,195 +32,226 @@ body {
 	height: 65px;
 	line-height: 65px;
 	font-size: 32px;
-    font-weight: bold;
+	font-weight: bold;
 }
-#content {
-	/*position: absolute;*/
+
+#content { /*position: absolute;*/
 	left: 10px;
 	top: 250px;
 	padding-top: 10px;
 	padding-left: 10px;
-	padding-right: 10px;  
+	padding-right: 10px;
 	/*width: 100%;*/
 	/*border:solid 1px #CCCCCC;*/
 	/*padding-left: 10px;*/
 }
+
 #formpopup {
 	border: 1px solid #cccccc;
 	/*position: relative;*/
 	top: 200px;
-	left:10px;
-	right:20px;
+	left: 10px;
+	right: 20px;
 	width: 500px;
 	padding-left: 10px;
 	padding-bottom: 10px;
 	margin-top: 10px;
-	
 }
+
 .form-left-col {
-	width:310px;
+	width: 310px;
 	float: left;
 }
+
 .form-right-col {
+	
 }
+
 h1 {
-    font-size: 28px;
+	font-size: 28px;
 }
+
 ul {
 	list-style-type: none;
 	padding-left: 0px;
 	margin-top: 0px;
 }
+
 li a {
-	text-decoration:none;
+	text-decoration: none;
 	display: block;
 	color: #000000;
-	border-bottom:solid 1px #CCCCCC;
+	/*border-bottom: solid 1px #CCCCCC;*/
 	padding: 8px;
+	font-size: 14px;
 }
+
 li a:hover {
 	background-color: #4B0A1E;
 	color: #BA8A92;
 }
-input, textarea {
-	border:1px solid #ccc;
-	min-height:20px;
+
+input,textarea {
+	border: 1px solid #ccc;
+	min-height: 20px;
 	outline: none;
 }
+
 .form-left-col input {
-	margin-bottom:15px;
-	margin-top:5px;
-	width:280px;
+	margin-bottom: 15px;
+	margin-top: 5px;
+	width: 280px;
 }
+
 textarea {
-	margin-bottom:15px;
-	margin-top:5px;
+	margin-bottom: 15px;
+	margin-top: 5px;
 	height: 200px;
-	width:250px;
+	width: 250px;
 }
+
 label {
-	display:block;
+	display: block;
 }
+
 button {
-	padding:6px;
+	padding: 6px;
 }
+
 table {
-    *border-collapse: collapse; /* IE7 and lower */
-    border-spacing: 0;
-    width: 100%;
+	*border-collapse: collapse; /* IE7 and lower */
+	border-spacing: 0;
+	width: 100%;
 }
 
 .bordered {
-    border: solid #ccc 1px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
-    -webkit-box-shadow: 0 1px 1px #ccc; 
-    -moz-box-shadow: 0 1px 1px #ccc; 
-    box-shadow: 0 1px 1px #ccc;         
+	border: solid #ccc 1px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-box-shadow: 0 1px 1px #ccc;
+	-moz-box-shadow: 0 1px 1px #ccc;
+	box-shadow: 0 1px 1px #ccc;
 }
 
 .bordered tr:hover {
-    background: #E8E8E8;
-    -o-transition: all 0.1s ease-in-out;
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;     
-}    
-    
-.bordered td, .bordered th {
-    /*border-left: 1px solid #ccc;*/
-    border-top: 1px solid #ccc;
-    padding: 10px;
-    text-align: left;    
+	background: #E8E8E8;
+	-o-transition: all 0.1s ease-in-out;
+	-webkit-transition: all 0.1s ease-in-out;
+	-moz-transition: all 0.1s ease-in-out;
+	-ms-transition: all 0.1s ease-in-out;
+	transition: all 0.1s ease-in-out;
+}
+
+.bordered td,.bordered th { /*border-left: 1px solid #ccc;*/
+	border-top: 1px solid #ccc;
+	padding: 10px;
+	text-align: left;
+	width: 50%;
 }
 
 .bordered th {
-    background-color: #72ce9b ;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#72ce9b), to(#72ce9b));
-    background-image: -webkit-linear-gradient(top, #72ce9b, #72ce9b);
-    /*background-image:    -moz-linear-gradient(top, #D0D0D0, #D0D0D0);*/
-    background-image:     -ms-linear-gradient(top, #72ce9b, #72ce9b);
-    background-image:      -o-linear-gradient(top, #72ce9b, #72ce9b);
-    background-image:         linear-gradient(top, #72ce9b, #72ce9b);
-    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; 
-    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;  
-    /*box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; */       
-    border-top: none;
-    text-shadow: 0 1px 0 rgba(255,255,255,.5); 
+	background-color: #72ce9b;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#72ce9b),
+		to(#72ce9b) );
+	background-image: -webkit-linear-gradient(top, #72ce9b, #72ce9b);
+	/*background-image:    -moz-linear-gradient(top, #D0D0D0, #D0D0D0);*/
+	background-image: -ms-linear-gradient(top, #72ce9b, #72ce9b);
+	background-image: -o-linear-gradient(top, #72ce9b, #72ce9b);
+	background-image: linear-gradient(top, #72ce9b, #72ce9b);
+	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset;
+	-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset;
+	/*box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; */
+	border-top: none;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
 
-.bordered td:first-child, .bordered th:first-child {
-    border-left: none;
+.bordered td:first-child,.bordered th:first-child {
+	border-left: none;
 }
 
 .bordered th:first-child {
-    -moz-border-radius: 6px 0 0 0;
-    -webkit-border-radius: 6px 0 0 0;
-    /*border-radius: 6px 0 0 0;*/
+	-moz-border-radius: 6px 0 0 0;
+	-webkit-border-radius: 6px 0 0 0;
+	/*border-radius: 6px 0 0 0;*/
 }
 
 .bordered th:last-child {
-    -moz-border-radius: 0 6px 0 0;
-    -webkit-border-radius: 0 6px 0 0;
-    /*border-radius: 0 6px 0 0;*/
+	-moz-border-radius: 0 6px 0 0;
+	-webkit-border-radius: 0 6px 0 0;
+	/*border-radius: 0 6px 0 0;*/
 }
 
-.bordered th:only-child{
-    -moz-border-radius: 6px 6px 0 0;
-    -webkit-border-radius: 6px 6px 0 0;
-    border-radius: 6px 6px 0 0;
+.bordered th:only-child {
+	-moz-border-radius: 6px 6px 0 0;
+	-webkit-border-radius: 6px 6px 0 0;
+	border-radius: 6px 6px 0 0;
 }
 
 .bordered tr:last-child td:first-child {
-    -moz-border-radius: 0 0 0 6px;
-    -webkit-border-radius: 0 0 0 6px;
-    border-radius: 0 0 0 6px;
+	-moz-border-radius: 0 0 0 6px;
+	-webkit-border-radius: 0 0 0 6px;
+	border-radius: 0 0 0 6px;
 }
 
 .bordered tr:last-child td:last-child {
-    -moz-border-radius: 0 0 6px 0;
-    -webkit-border-radius: 0 0 6px 0;
-    border-radius: 0 0 6px 0;
+	-moz-border-radius: 0 0 6px 0;
+	-webkit-border-radius: 0 0 6px 0;
+	border-radius: 0 0 6px 0;
 }
-.block{
+
+.block {
 	float: right;
-    margin-right: 10px;
-    margin-top: 18px;	
+	margin-right: 10px;
+	margin-top: 18px;
+}
+
+.dropdownblock {
+	float: right;
+	margin-right: 10px;
 }
 
 .example-animate-container {
-  background:white;
-  /*border:1px solid black;*/
-  list-style:none;
-  margin:0;
-  padding:0 10px;
+	background: white;
+	/*border:1px solid black;*/
+	list-style: none;
+	margin: 0;
+	padding: 0 10px;
 }
 
-.animate-repeat {
-  /*line-height:40px;*/
-  list-style:none;
-  box-sizing:border-box;
+.animate-repeat { /*line-height:40px;*/
+	list-style: none;
+	box-sizing: border-box;
 }
 
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter,
-.animate-repeat.ng-leave {
-  -webkit-transition:all linear 0.5s;
-  transition:all linear 0.5s;
+.animate-repeat.ng-move,.animate-repeat.ng-enter,.animate-repeat.ng-leave
+	{
+	-webkit-transition: all linear 0.5s;
+	transition: all linear 0.5s;
 }
 
-.animate-repeat.ng-leave.ng-leave-active,
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter {
-  opacity:0;
-  max-height:0;
+.animate-repeat.ng-leave.ng-leave-active,.animate-repeat.ng-move,.animate-repeat.ng-enter
+	{
+	opacity: 0;
+	max-height: 0;
 }
 
-.animate-repeat.ng-leave,
-.animate-repeat.ng-move.ng-move-active,
-.animate-repeat.ng-enter.ng-enter-active {
-  opacity:1;
-  max-height:40px;
+.animate-repeat.ng-leave,.animate-repeat.ng-move.ng-move-active,.animate-repeat.ng-enter.ng-enter-active
+	{
+	opacity: 1;
+	max-height: 40px;
+}
+
+.contactsTitle {
+	font-weight: bold;
+	float: left; 
+}
+
+.contactsCount {
+	font-weight: bold;
+}
+
+.noteTitle{
+	font-size: 12px;
+	color: #ea2839;
 }
