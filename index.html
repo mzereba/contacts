@@ -19,7 +19,7 @@
 		<div id="header">
 			PaCM <button class="btn btn-login block" ng-click="login()">Authenticate</button>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
-				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)">
 					My Profile <span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
@@ -27,8 +27,8 @@
 				  	<li><a href="#" ng-click="editProfile()">Edit Profile</a></li>
 				</ul>
 			</div>
-			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." />
-			<button class="btn btn-success block" ng-click="add()">New Contact</button>
+			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!hasAuthenticated(validUser)" />
+			<button class="btn btn-success block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)">New Contact</button>
 		</div>
 		 <div id="content" >
 		    <p class="contactsTitle">My Contacts&nbsp;</p>

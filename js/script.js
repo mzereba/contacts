@@ -15,6 +15,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     //$scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
     $scope.prefix = "vcard_";
     
+    $scope.validUser = "no";
+    
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
     
@@ -44,6 +46,11 @@ module.controller('ContactController', function ($scope, $http, $sce) {
        
     $scope.login = function() {
     	 $scope.authenticationModal = true;	 
+    };
+    
+    $scope.hasAuthenticated = function(value) {
+        //alert(value);
+        return "yes"==value;
     };
     
     $scope.add = function() {
@@ -154,6 +161,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.authenticate = function(webid) {
         if (webid.slice(0,4) == 'http') {
+        	$scope.validUser = "yes";
             console.log("Authenticated user: "+webid);
         } else {
             console.log("Authentication failed: "+webid);
