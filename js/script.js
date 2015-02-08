@@ -274,7 +274,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	var uri = str.slice(0, str.length-1);
 		$http({
           method: 'PUT', 
-	     url: uri,
+	      url: uri,
           data: '',
           headers: {
             'Content-Type': 'text/turtle',
