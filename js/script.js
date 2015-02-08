@@ -11,8 +11,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.modalTitle = '';
     
     $scope.user = '';	// 'https://mzereba.rww.io/profile/card#me'
-    $scope.path = '';	// 'http://mzereba.rww.io/storage/contacts/';
-    //$scope.path = 'http://essam.crosscloud.qcri.org/storage/contacts/';
+    $scope.storage = '';	// 'http://mzereba.rww.io/storage/';
+    $scope.path = 	//'http://essam.crosscloud.qcri.org/storage/contacts/';
     $scope.prefix = "vcard_";
     
     $scope.validUser = "no";
@@ -76,6 +76,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
    			$scope.addProfile();
    		}else{
 	    	$scope.modalTitle = "Edit Profile";
+	    	$scope.noteTitle = "";
 	    	$scope.editProfileModal = true;
 	    	$scope.newcontact = angular.copy($scope.get(0));
    		}
@@ -177,7 +178,6 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
 			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
-			//var myOntology = $rdf.Namespace('http://user.pds.org/ontology/'); 
 			var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
 	
 			var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
@@ -207,7 +207,36 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 	    });
     };
     
-    // Function to insert or update a contact resource
+    // Getting user storage
+    $scope.getStorage = function () {
+		var g = $rdf.graph();
+	    var f = $rdf.fetcher(g);
+	    var uri = $scope.user.slice(0,$scope.user.length-3);
+	    
+	    f.nowOrWhenFetched(uri ,undefined,function(){	
+		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
+			var SPACE = $rdf.Namespace('http://www.w3.org/ns/pim/space#');
+			var FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+	
+			var evs = g.statementsMatching(undefined, RDF('type'), FOAF('Person'));
+			if (evs != undefined) {
+				for (var e in evs) {
+					var s = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
+					
+					$scope.storage = s;
+                    $scope.$apply();
+                }
+			}
+			
+			$scope.isContactsContainer();
+	    });
+	    
+	    
+    };
+    
+    // Insert or update a contact resource
     $scope.insertContact = function (contact) {
 	    var contactUri = $scope.path + $scope.prefix + contact.id;
         var resource = $scope.composeRDFResource(contact, contactUri);
@@ -240,10 +269,42 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         });
     };
     
+    // Create contacts container
+    $scope.createContactsContainer = function (str) {
+    	var uri = str.slice(0, str.length-1);
+		$http({
+          method: 'PUT', 
+	     url: uri,
+          data: '',
+          headers: {
+            'Content-Type': 'text/turtle',
+			'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"'
+          },
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          if (status == 200 || status == 201) {
+            console.log('Success: Container created. ',' Your contacts container is at '+str);
+            $scope.path = str;
+            // fetching user data
+            $scope.load();
+          }
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            console.log('Forbidden: Authentication required to create new resource.');
+          } else if (status == 403) {
+            console.log('Forbidden: You are not allowed to create new resource.');
+          } else {
+            console.log('Failed '+ status + data);
+          }
+        });
+    };
+    
     // Iterate through contacts list and delete
     // contact if found
     $scope.remove = function (id) {
-        contactUri = $scope.path + $scope.prefix + id;
+        var contactUri = $scope.path + $scope.prefix + id;
     	$http({
     	      method: 'DELETE',
     	      url: contactUri,
@@ -259,9 +320,9 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	    }).
     	    error(function(data, status) {
     	      if (status == 401) {
-    	    	  console.log('Forbidden', 'Authentication required to delete '+resourceUri);
+    	    	  console.log('Forbidden', 'Authentication required to delete '+contactUri);
     	      } else if (status == 403) {
-    	    	  console.log('Forbidden', 'You are not allowed to delete '+resourceUri);
+    	    	  console.log('Forbidden', 'You are not allowed to delete '+contactUri);
     	      } else if (status == 409) {
     	    	  console.log('Failed', 'Conflict detected. In case of directory, check if not empty.');
     	      } else {
@@ -271,15 +332,46 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	
         if ($scope.newcontact.id == id) $scope.newcontact = {};
     };
-    
+       
+    // Check if contacts dir exists, if not create it
+    $scope.isContactsContainer = function () {
+    	var uri = $scope.storage + "contacts/";
+        $http({
+          method: 'HEAD',
+          url: uri,
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          // add dir to storage
+          console.log("Contacts container found");
+          $scope.path = uri;
+          // fetching user data
+          $scope.load();
+       
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            console.log('Forbidden', 'Authentication required to change permissions for: '+$scope.user);
+          } else if (status == 403) {
+        	  console.log('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
+          } else if (status == 404) {
+        	  console.log('Contacts container not found...', 'creating it');
+        	  // create contacts container
+        	  $scope.createContactsContainer(uri);
+          } else {
+        	  console.log('Failed - HTTP '+status, data, 5000);
+          }
+        });
+    };
+      
     // Composes an RDF resource to send to the server
     $scope.composeRDFResource = function (contact, uri) {
-        var rdf =   "<" + uri + ">\n" +
-                "a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
-                "<http://www.w3.org/2006/vcard/ns#fn> \"" + contact.fullname + "\" ;\n" +
-                "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
-                "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> .\n";
-        return rdf;
+       var rdf =   "<" + uri + ">\n" +
+          "a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
+          "<http://www.w3.org/2006/vcard/ns#fn> \"" + contact.fullname + "\" ;\n" +
+          "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
+          "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> .\n";
+       return rdf;
     };
        
     // Listen to WebIDAuth events
@@ -290,10 +382,13 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         if (e.data.slice(0,5) == 'User:') {          
             $scope.authenticate(e.data.slice(5, e.data.length));
             $scope.user = e.data.slice(5);
-            $scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            
+            //$scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
+            // Getting user storage and assign contacts dir
+            $scope.getStorage();
             
             //Fetch user data after login
-            $scope.load();
+            //$scope.load();
         }
         
         $scope.closeAuth();
