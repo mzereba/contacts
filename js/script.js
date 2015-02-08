@@ -9,14 +9,13 @@ var module = angular.module('Contacts', ['ui.bootstrap.modal', 'ui.bootstrap.dro
 module.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
     $scope.modalTitle = '';
-    
-    $scope.user = '';	// 'https://mzereba.rww.io/profile/card#me'
-    $scope.storage = '';	// 'http://mzereba.rww.io/storage/';
-    $scope.path = 	//'http://essam.crosscloud.qcri.org/storage/contacts/';
-    $scope.prefix = "vcard_";
-    
     $scope.validUser = "no";
     
+    $scope.user = '';
+    $scope.storage = '';	
+    $scope.path = 	
+    $scope.prefix = "vcard_";
+        
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
     
@@ -163,9 +162,9 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.authenticate = function(webid) {
         if (webid.slice(0,4) == 'http') {
         	$scope.validUser = "yes";
-            console.log("Authenticated user: "+webid);
+            notify('Success', 'Authenticated user.');
         } else {
-            console.log("Authentication failed: "+webid);
+            notify('Failed', 'Authentication failed.');
         }
     };
         
@@ -238,11 +237,11 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     
     // Insert or update a contact resource
     $scope.insertContact = function (contact) {
-	    var contactUri = $scope.path + $scope.prefix + contact.id;
-        var resource = $scope.composeRDFResource(contact, contactUri);
+	    var uri = $scope.path + $scope.prefix + contact.id;
+        var resource = $scope.composeRDFResource(contact, uri);
         $http({
           method: 'PUT', 
-          url: contactUri,
+          url: uri,
           data: resource,
           headers: {
             'Content-Type': 'text/turtle',
@@ -252,7 +251,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
-            console.log('Success: Resource created.');
+            notify('Success', 'Resource created.');
             // Update view
             $scope.contacts.length = 0;
             $scope.load();
@@ -260,11 +259,11 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         error(function(data, status) {
           if (status == 401) {
-            console.log('Forbidden: Authentication required to create new resource.');
+            notify('Forbidden', 'Authentication required to create new resource.');
           } else if (status == 403) {
-            console.log('Forbidden: You are not allowed to create new resource.');
+            notify('Forbidden', 'You are not allowed to create new resource.');
           } else {
-            console.log('Failed '+ status + data);
+            notify('Failed '+ status + data);
           }
         });
     };
@@ -284,7 +283,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
-            console.log('Success: Container created. ',' Your contacts container is at '+str);
+            notify('Success', 'Your contacts container has been created at '+str);
             $scope.path = str;
             // fetching user data
             $scope.load();
@@ -292,11 +291,11 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         error(function(data, status) {
           if (status == 401) {
-            console.log('Forbidden: Authentication required to create new resource.');
+            notify('Forbidden', 'Authentication required to create new directory.');
           } else if (status == 403) {
-            console.log('Forbidden: You are not allowed to create new resource.');
+            notify('Forbiddenn', 'You are not allowed to create new directory.');
           } else {
-            console.log('Failed '+ status + data);
+            notify('Failed: '+ status + data);
           }
         });
     };
@@ -304,15 +303,15 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     // Iterate through contacts list and delete
     // contact if found
     $scope.remove = function (id) {
-        var contactUri = $scope.path + $scope.prefix + id;
+        var uri = $scope.path + $scope.prefix + id;
     	$http({
     	      method: 'DELETE',
-    	      url: contactUri,
+    	      url: uri,
     	      withCredentials: true
     	    }).
     	    success(function(data, status, headers) {
     	      if (status == 200) {
-    	    	console.log('Success', 'Deleted '+contactUri);
+    	    	notify('Success', 'Resource deleted.');
     	        // Update view
                 $scope.contacts.length = 0;
                 $scope.load();
@@ -320,11 +319,11 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	    }).
     	    error(function(data, status) {
     	      if (status == 401) {
-    	    	  console.log('Forbidden', 'Authentication required to delete '+contactUri);
+    	    	  notify('Forbidden', 'Authentication required to delete '+uri);
     	      } else if (status == 403) {
-    	    	  console.log('Forbidden', 'You are not allowed to delete '+contactUri);
+    	    	  notify('Forbidden', 'You are not allowed to delete '+uri);
     	      } else if (status == 409) {
-    	    	  console.log('Failed', 'Conflict detected. In case of directory, check if not empty.');
+    	    	  notify('Failed', 'Conflict detected. In case of directory, check if not empty.');
     	      } else {
     	    	  console.log('Failed '+status, data);
     	      }
@@ -343,7 +342,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
           // add dir to storage
-          console.log("Contacts container found");
+          //console.log("Contacts container found");
           $scope.path = uri;
           // fetching user data
           $scope.load();
@@ -351,15 +350,15 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         error(function(data, status) {
           if (status == 401) {
-            console.log('Forbidden', 'Authentication required to change permissions for: '+$scope.user);
+            notify('Forbidden', 'Authentication required to create a directory for: '+$scope.user);
           } else if (status == 403) {
-        	  console.log('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
+        	  notify('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
           } else if (status == 404) {
-        	  console.log('Contacts container not found...', 'creating it');
+        	  //console.log('Contacts container not found...', 'creating it');
         	  // create contacts container
         	  $scope.createContactsContainer(uri);
           } else {
-        	  console.log('Failed - HTTP '+status, data, 5000);
+        	  notify('Failed - HTTP '+status, data, 5000);
           }
         });
     };
@@ -382,13 +381,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         if (e.data.slice(0,5) == 'User:') {          
             $scope.authenticate(e.data.slice(5, e.data.length));
             $scope.user = e.data.slice(5);
-            
-            //$scope.path = $scope.user.slice(0, $scope.user.length-15) + 'storage/contacts/';
             // Getting user storage and assign contacts dir
             $scope.getStorage();
-            
-            //Fetch user data after login
-            //$scope.load();
         }
         
         $scope.closeAuth();
