@@ -209,7 +209,7 @@ table {
 .dropdownblock {
 	float: right;
 	margin-right: 10px;
-	margin-top:0px;
+	margin-top:0.5px;
 }
 
 .example-animate-container {

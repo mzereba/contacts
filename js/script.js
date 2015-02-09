@@ -15,6 +15,8 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.storage = '';	
     $scope.path = 	
     $scope.prefix = "vcard_";
+    var CREATE = 0;
+    var UPDATE = 1;
         
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
@@ -101,14 +103,15 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     $scope.save = function(newcontact) {
     	if (newcontact.id == null) {
             //if this is new contact, add it in contacts array
-            newcontact.id = new Date().getTime(); // Generate unique id
-            $scope.insertContact(newcontact);
+    		//generate unique id
+            newcontact.id = new Date().getTime();
+            $scope.insertContact(newcontact, CREATE);
         } else {
             //for existing contact, find this contact using id
             //and update it.
             for (i in $scope.contacts) {
                 if ($scope.contacts[i].id == newcontact.id) {
-                	$scope.insertContact(newcontact);
+                	$scope.insertContact(newcontact, UPDATE);
                 }
             }
         }
@@ -236,7 +239,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     // Insert or update a contact resource
-    $scope.insertContact = function (contact) {
+    $scope.insertContact = function (contact, operation) {
 	    var uri = $scope.path + $scope.prefix + contact.id;
         var resource = $scope.composeRDFResource(contact, uri);
         $http({
@@ -251,8 +254,12 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
-            notify('Success', 'Resource created.');
-            // Update view
+            if(operation == CREATE)
+            	notify('Success', 'Resource created.');
+            else 
+            	notify('Success', 'Resource updated.');
+            
+            //update view
             $scope.contacts.length = 0;
             $scope.load();
           }
@@ -285,7 +292,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
           if (status == 200 || status == 201) {
             notify('Success', 'Your contacts container has been created at '+str);
             $scope.path = str;
-            // fetching user data
+            //fetch user data
             $scope.load();
           }
         }).
@@ -312,7 +319,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     	    success(function(data, status, headers) {
     	      if (status == 200) {
     	    	notify('Success', 'Resource deleted.');
-    	        // Update view
+    	        //update view
                 $scope.contacts.length = 0;
                 $scope.load();
     	      }
@@ -341,10 +348,10 @@ module.controller('ContactController', function ($scope, $http, $sce) {
           withCredentials: true
         }).
         success(function(data, status, headers) {
-          // add dir to storage
+          //add dir to storage
           //console.log("Contacts container found");
           $scope.path = uri;
-          // fetching user data
+          //fetch user data
           $scope.load();
        
         }).
@@ -355,7 +362,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         	  notify('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
           } else if (status == 404) {
         	  //console.log('Contacts container not found...', 'creating it');
-        	  // create contacts container
+        	  //create contacts container
         	  $scope.createContactsContainer(uri);
           } else {
         	  notify('Failed - HTTP '+status, data, 5000);
@@ -381,7 +388,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
         if (e.data.slice(0,5) == 'User:') {          
             $scope.authenticate(e.data.slice(5, e.data.length));
             $scope.user = e.data.slice(5);
-            // Getting user storage and assign contacts dir
+            //get user storage and assign contacts dir
             $scope.getStorage();
         }
         
