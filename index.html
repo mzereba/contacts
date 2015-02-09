@@ -20,7 +20,7 @@
 	</head>
 	<body ng-app="Contacts" ng-controller="ContactController" ng-init="list = contacts">
 		<div id="header">
-			PaCM <button class="btn btn-login block" ng-click="login()">Authenticate</button>
+			PaCM <button class="btn btn-warning block" ng-click="login()">Login / Signup</button>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
 				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)">
 					My Profile <span class="caret"></span>
@@ -31,7 +31,7 @@
 				</ul>
 			</div>
 			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!hasAuthenticated(validUser)" />
-			<button class="btn btn-success block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)">New Contact</button>
+			<button class="btn btn-default block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)">New Contact</button>
 		</div>
 		 <div id="content" >
 		    <p class="contactsTitle">My Contacts&nbsp;</p>
