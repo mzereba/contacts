@@ -2,7 +2,7 @@
 
 <html>
 	<head>
-		<title>PaCM | Profile and Contacts Manager</title>
+		<title>PaCM | Profile and Contact Manager</title>
 		
 		<!-- link rel="shortcut icon" type="img/png" href="assets/favicon.ico" -->
 		
@@ -12,7 +12,7 @@
 		<script src="js/angular/angular-animate.js"></script>
 		<script src="js/rdflib/rdflib.min.js"></script>
 		
-		<script src="js/script.js"></script>
+		<script src="js/app.js"></script>
 		<script src="js/utils/notifications.js"></script>
 		
 		<link rel="stylesheet" href="css/style.css" />
@@ -49,7 +49,7 @@
 				  <td>
 				  	  <a href="#" ng-click="view(contact.id)">view</a> |
 				      <a href="#" ng-click="edit(contact.id)">edit</a> |
-				      <a href="#" ng-click="remove(contact.id)">delete</a>
+				      <a href="#" ng-click="remove(contact)">delete</a>
 				  </td>
 		        </tr>
 		        <tr class="animate-repeat" ng-if="results.length == 0 || (results.length == 1 && results[0].id == 0)">
