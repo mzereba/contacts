@@ -4,9 +4,28 @@
  * @author mzereba
  */
 
-var module = angular.module('Contacts', ['ui.bootstrap.modal', 'ui.bootstrap.dropdown']);
+var app = angular.module('Contacts', ['ui.bootstrap.modal', 'ui.bootstrap.dropdown']);
 
-module.controller('ContactController', function ($scope, $http, $sce) {
+app.directive('ngFocus', function($timeout) {
+    return {
+        link: function ( scope, element, attrs ) {
+            scope.$watch( attrs.ngFocus, function ( val ) {
+                if ( angular.isDefined( val ) && val ) {
+                    $timeout( function () { element[0].focus(); } );
+                }
+            }, true);
+
+            element.bind('blur', function () {
+                if ( angular.isDefined( attrs.ngFocusLost ) ) {
+                    scope.$apply( attrs.ngFocusLost );
+
+                }
+            });
+        }
+    };
+});
+
+app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
     $scope.modalTitle = '';
     $scope.validUser = "no";
@@ -55,20 +74,23 @@ module.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.add = function() {
-    	 $scope.modalTitle = "New Contact";
-    	 $scope.editContactModal = true;
+    	$scope.modalTitle = "New Contact";
+    	$scope.editContactModal = true;
+    	$scope.isFocused = true;
     };
     
     $scope.addProfile = function() {
     	$scope.modalTitle = "Create Profile";
     	$scope.noteTitle = "Warning: you currently do not have a profile, please create one!";
     	$scope.editProfileModal = true;
+    	$scope.isFocused = true;
     };
     
     $scope.edit = function(id) {
     	$scope.modalTitle = "Edit Contact";
     	$scope.editContactModal = true;
     	$scope.newcontact = angular.copy($scope.get(id));
+    	$scope.isFocused = true;
     };
     
     $scope.editProfile = function() {
@@ -80,6 +102,7 @@ module.controller('ContactController', function ($scope, $http, $sce) {
 	    	$scope.noteTitle = "";
 	    	$scope.editProfileModal = true;
 	    	$scope.newcontact = angular.copy($scope.get(0));
+	    	$scope.isFocused = true;
    		}
     };
     
