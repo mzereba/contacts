@@ -140,6 +140,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }
     	
     	$scope.editContactModal = false;
+    	$scope.isFocused = false;
     	$scope.newcontact = {};
     };
         
@@ -159,16 +160,19 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }
     	
     	$scope.editProfileModal = false;
+    	$scope.isFocused = false;
     	$scope.newcontact = {};
     };
     
     $scope.closeEditor = function() {
     	$scope.editContactModal = false;
+    	$scope.isFocused = false;
     	$scope.newcontact = {};
     };
     
     $scope.closeProfileEditor = function() {
     	$scope.editProfileModal = false;
+    	$scope.isFocused = false;
     	$scope.newcontact = {};
     };
     
