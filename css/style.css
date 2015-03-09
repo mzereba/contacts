@@ -203,14 +203,14 @@ table {
 .block {
 	float: right;
 	margin-right: 10px;
-	margin-top: 18px;
+	margin-top: 11px;
 	font-weight: bold;
 }
 
 .dropdownblock {
 	float: right;
 	margin-right: 10px;
-	margin-top:0.5px;
+	/*margin-top:0.5px;*/
 }
 
 .example-animate-container {
@@ -251,6 +251,12 @@ table {
 
 .contactsCount {
 	font-weight: bold;
+	color: white;
+	vertical-align: 3px;
+}
+.contactsCount:hover {
+	color: white;
+	text-decoration: none;
 }
 
 .noteTitle{

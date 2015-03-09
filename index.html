@@ -2,13 +2,14 @@
 
 <html>
 	<head>
-		<title>PaCM | Profile and Contact Manager</title>
+		<title>Contacts | Contact manager</title>
 		
-		<!-- link rel="shortcut icon" type="img/png" href="assets/favicon.ico" -->
+		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
 		
 		<script src="js/angular/angular.min.js"></script>
 		<script src="js/angular/angular-ui-bootstrap-modal.js"></script>
 		<script src="js/angular/angular-ui-bootstrap-dropdown.js"></script>
+		<script src="js/angular/angular-ui-bootstrap-tooltip.js"></script>
 		<script src="js/angular/angular-animate.js"></script>
 		<script src="js/rdflib/rdflib.min.js"></script>
 		
@@ -17,13 +18,20 @@
 		
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="css/bootstrap.css" />
+		<link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
 	</head>
 	<body ng-app="Contacts" ng-controller="ContactController" ng-init="list = contacts">
 		<div id="header">
-			PaCM <button class="btn btn-warning block" ng-click="login()">Login / Signup</button>
+			<i class="fa fa-group"></i> 
+			Contacts 
+			<a class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</a><a class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</a> 
+			<button class="btn btn-warning block" ng-click="login()" tooltip="Login" tooltip-placement="bottom" tooltip-size="small">
+				<i class="fa fa-sign-in fa-2x"></i>
+			</button>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
-				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)">
-					My Profile <span class="caret"></span>
+				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)" tooltip="My profile" tooltip-placement="bottom">
+					<i class="fa fa-user fa-2x"></i> 
+					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
 					<li><a href="#" ng-click="viewProfile()">View Profile</a></li>
@@ -31,12 +39,12 @@
 				</ul>
 			</div>
 			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!hasAuthenticated(validUser)" />
-			<button class="btn btn-default block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)">New Contact</button>
+			<button class="btn btn-default block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)" tooltip="Add contact" tooltip-placement="bottom">
+				<i class="fa fa-user-plus fa-2x"></i>
+			</button>
 		</div>
 		 <div id="content" >
-		    <p class="contactsTitle">My Contacts&nbsp;</p>
-		    <p class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</p><p class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</p>
-			<table class="example-animate-container bordered">
+		    <table class="example-animate-container bordered">
 		        <thead>
 				<tr>
 				    <th>Name</th>
@@ -44,12 +52,12 @@
 				</tr>
 				</thead>
 				<tbody>
-		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results" ng-if="contact.id != 0">
+		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results" ng-if="contact.id != 0">	
 		          <td>{{contact.fullname}}</td>
 				  <td>
-				  	  <a href="#" ng-click="view(contact.id)">view</a> |
-				      <a href="#" ng-click="edit(contact.id)">edit</a> |
-				      <a href="#" ng-click="remove(contact)">delete</a>
+				  	  <a href="#" ng-click="view(contact.id)" tooltip="View" tooltip-placement="bottom"><i class="fa fa-user fa-2x"></i></a>&nbsp;
+				      <a href="#" ng-click="edit(contact.id)" tooltip="Edit" tooltip-placement="bottom"><i class="fa fa-pencil-square-o fa-2x"></i></a>&nbsp; 
+				      <a href="#" ng-click="remove(contact)" tooltip="Delete" tooltip-placement="bottom"><i class="fa fa-user-times fa-2x"></i></a>
 				  </td>
 		        </tr>
 		        <tr class="animate-repeat" ng-if="results.length == 0 || (results.length == 1 && results[0].id == 0)">
