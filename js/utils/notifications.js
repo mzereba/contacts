@@ -8,7 +8,7 @@ window.addEventListener('load', function () {
 });
 
 function notify(type, body, timeout) {
-  var icon = 'images/favicon.gif';
+  var icon = 'images/favicon.ico';
   if (!timeout) {
     var timeout = 2000;
   }
