@@ -187,12 +187,12 @@ textarea {
 }
 
 a {
-  color: #0088cc;
+  color: #000000;
   text-decoration: none;
 }
 
 a:hover {
-  color: #005580;
+  color: #000000;
   text-decoration: underline;
 }
 
@@ -1027,7 +1027,7 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   display: inline-block;
-  height: 20px;
+  height: 32px;
   padding: 4px 6px;
   margin-bottom: 10px;
   font-size: 14px;
@@ -2830,9 +2830,9 @@ table th[class*="span"],
   z-index: 1000;
   display: none;
   float: left;
-  min-width: 160px;
+  min-width: 100px;
   padding: 5px 0;
-  margin: 2px 0 0;
+  margin: 6px 0 0;
   list-style: none;
   background-color: #ffffff;
   border: 1px solid #ccc;
@@ -2867,7 +2867,7 @@ table th[class*="span"],
 
 .dropdown-menu li > a {
   display: block;
-  padding: 3px 20px;
+  padding: 3px 14px;
   clear: both;
   font-weight: normal;
   line-height: 20px;
@@ -3105,7 +3105,7 @@ button.close {
 .btn {
   display: inline-block;
   *display: inline;
-  padding: 4px 12px;
+  /*padding: 4px 12px;*/
   margin-bottom: 0;
   *margin-left: .3em;
   font-size: 14px;
@@ -5198,7 +5198,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1030;
   display: block;
   padding: 5px;
-  font-size: 11px;
+  font-size: 8px;
   opacity: 0;
   filter: alpha(opacity=0);
   visibility: visible;

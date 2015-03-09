@@ -4,7 +4,7 @@
  * @author mzereba
  */
 
-var app = angular.module('Contacts', ['ui.bootstrap.modal', 'ui.bootstrap.dropdown']);
+var app = angular.module('Contacts', ['ui.bootstrap.modal', 'ui.bootstrap.dropdown', 'ui.bootstrap.tooltip']);
 
 app.directive('ngFocus', function($timeout) {
     return {
