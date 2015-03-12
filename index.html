@@ -20,7 +20,7 @@
 		<link rel="stylesheet" href="css/bootstrap.css" />
 		<link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
 	</head>
-	<body ng-app="Contacts" ng-controller="ContactController" ng-init="list = contacts">
+	<body ng-app="Contacts" ng-controller="ContactController" ng-init="list = contacts">	
 		<div id="header">
 			<i class="fa fa-group"></i> 
 			Contacts 
@@ -41,6 +41,9 @@
 			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!hasAuthenticated(validUser)" />
 			<button class="btn btn-default block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)" tooltip="Add contact" tooltip-placement="bottom">
 				<i class="fa fa-user-plus fa-2x"></i>
+			</button>
+			<button class="btn btn-default block" ng-click="search()" ng-disabled="!hasAuthenticated(validUser)" tooltip="Search" tooltip-placement="bottom">
+				<i class="fa fa-search fa-2x"></i>
 			</button>
 		</div>
 		 <div id="content" >
@@ -71,5 +74,6 @@
 		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="cancel()"></div>
 		<div modal="editProfileModal" ng-include="'templates/editProfileModal.htm'" close="cancel()" ></div>
 		<div modal="viewProfileModal" ng-include="'templates/viewProfileModal.htm'" close="cancel()" ></div>
+		<div modal="searchContactModal" ng-include="'templates/searchContactModal.htm'" close="cancel()" ></div>
 	</body>
 </html>
