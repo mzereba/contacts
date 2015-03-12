@@ -40,8 +40,29 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
     
+    var queryTemplate = "construct { \n" +
+						"?VCard a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ; \n" +
+						"<http://www.w3.org/2006/vcard/ns#fn> ?Name ; \n" +
+						"<http://www.w3.org/2006/vcard/ns#hasEmail> ?Email; \n" +
+						"<http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel; \n" +
+						"<http://www.w3.org/2006/vcard/ns#hasUID> " + "\"\"" + "; \n" +
+						"<VCardOwner> ?oWebID. \n" +
+						"} \n" +
+						"where { \n" +
+						"?oWebID <http://www.w3.org/ns/pim/space#storage> ?Storage . \n" +
+						"?Storage <http://www.w3.org/ns/ldp#contains> ?Contacts . \n" +
+						"?Contacts <http://purl.org/dc/terms/title> \"contacts\" . \n" +
+						"?Contacts <http://www.w3.org/ns/ldp#contains> ?VCard . \n" +
+						"?VCard a <http://www.w3.org/2006/vcard/ns#Individual> . \n" +
+						"?VCard <http://www.w3.org/2006/vcard/ns#fn> ?Name . \n" +
+						"?VCard <http://www.w3.org/2006/vcard/ns#hasEmail> ?Email . \n" +
+						"?VCard <http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel . \n" +
+						" \n";
+
+    $scope.queryResult = '';
+    
     $scope.status = {
-    	    isopen: false
+    	isopen: false
 	};
 
 	$scope.toggled = function(open) {
@@ -76,6 +97,12 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.add = function() {
     	$scope.modalTitle = "New Contact";
     	$scope.editContactModal = true;
+    	$scope.isFocused = true;
+    };
+    
+    $scope.search = function() {
+    	$scope.modalTitle = "Search Contact";
+    	$scope.searchContactModal = true;
     	$scope.isFocused = true;
     };
     
@@ -143,7 +170,21 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.isFocused = false;
     	$scope.newcontact = {};
     };
-        
+    
+    $scope.query = function(searchcontact) {
+    	if(searchcontact.fullname != ""){
+    		var q = queryTemplate + 
+		    		"FILTER(REGEX(?Name, " + "\"" + searchcontact.fullname + "\"" + ")) \n" +
+					" \n" +
+					"} \n";
+    		
+    		$scope.searchContact(q);
+    	
+    	}else{
+    		alert("Please enter a search value");
+    	}
+    };
+       
     $scope.saveProfile = function(newcontact) {
     	if (newcontact.id == null) {
             //if this is new contact, add it in contacts array
@@ -168,6 +209,11 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.editContactModal = false;
     	$scope.isFocused = false;
     	$scope.newcontact = {};
+    };
+    
+    $scope.closeSearch = function() {
+    	$scope.searchContactModal = false;
+    	$scope.isFocused = false;
     };
     
     $scope.closeProfileEditor = function() {
@@ -290,6 +336,37 @@ app.controller('ContactController', function ($scope, $http, $sce) {
             	notify('Success', 'Resource updated.');
            
             $scope.newcontact = {};
+          }
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            notify('Forbidden', 'Authentication required to create new resource.');
+          } else if (status == 403) {
+            notify('Forbidden', 'You are not allowed to create new resource.');
+          } else {
+            notify('Failed '+ status + data);
+          }
+        });
+    };
+    
+    // Search contacts using link following
+    $scope.searchContact = function (q) {
+    	var uri = "http://crosscloud.qcri.org/LDM/server/RDF/query";
+    	//var uri = $scope.path;
+        $http({
+          method: 'POST', 
+          url: uri,
+          data: q,
+          headers: {
+        	//'Accept': 'text/turtle',
+          },
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          if (status == 200 || status == 201) {
+        	  $scope.queryResult = data;
+        	  //$("#query").val(data);
+        	  $scope.searchcontact = {};
           }
         }).
         error(function(data, status) {
