@@ -359,7 +359,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           data: q,
           headers: {
         	//'Accept': 'text/turtle',
-        	  'Access-Control-Allow-Origin': '*'
+        	  'Access-Control-Allow-Origin': 'http://mzereba.github.io'
           },
           withCredentials: true
         }).
