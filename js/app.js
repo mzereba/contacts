@@ -359,6 +359,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           data: q,
           headers: {
         	//'Accept': 'text/turtle',
+        	  'Access-Control-Allow-Origin': '*'
           },
           withCredentials: true
         }).
