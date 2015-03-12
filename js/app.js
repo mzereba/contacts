@@ -357,8 +357,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           method: 'POST', 
           url: uri,
           data: q,
-          /*
+          //*
           headers: {
+        	  'Content-Type': 'text/turtle',
         	//'Accept': 'text/turtle',
         	//'Access-Control-Allow-Origin': '*'
           },//*/
