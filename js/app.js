@@ -357,10 +357,11 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           method: 'POST', 
           url: uri,
           data: q,
+          /*
           headers: {
         	//'Accept': 'text/turtle',
-        	  'Origin': 'http://mzereba.github.io'
-          },
+        	//'Access-Control-Allow-Origin': '*'
+          },//*/
           withCredentials: true
         }).
         success(function(data, status, headers) {
