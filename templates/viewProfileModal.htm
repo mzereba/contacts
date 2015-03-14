@@ -2,6 +2,7 @@
 	<h4 id="modal-title">{{modalTitle}}</h4>
 </div>
 <div class="modal-body">
+	<div class="infoView">
 	<form>
 	    <label>WebID</label>
 	       <p name="name" ng-model="viewcontact.webid" type="text">{{viewcontact.webid}}</p>
@@ -12,7 +13,10 @@
 	    <label>Phone</label>
 	       <p name="phone" ng-model="viewcontact.phone" type="text">{{viewcontact.phone}}</p>
 	</form>
-	<img src="{{viewcontact.photo}}" alt="{{viewcontact.photo}}"> 
+	</div>
+	<div class="photoView">
+		<img src="{{viewcontact.photo}}" alt="{{viewcontact.photo}}"  width="90px" height="90px">
+	</div>
 </div>
 <div class="modal-footer">
 	<button class="btn" ng-click="closeProfileViewer()">Cancel</button>

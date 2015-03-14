@@ -50,12 +50,14 @@
 		    <table class="example-animate-container bordered">
 		        <thead>
 				<tr>
+					<th class="photoColumn"></th>
 				    <th>Name</th>
 				    <th>Action</th>
 				</tr>
 				</thead>
 				<tbody>
 		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results" ng-if="contact.id != 0">	
+		          <td class="photoColumn"><img src="{{contact.photo}}" alt="{{contact.photo}}" width="45px" height="45px"></td>
 		          <td>{{contact.fullname}}</td>
 				  <td>
 				  	  <a href="#" ng-click="view(contact.id)" tooltip="View" tooltip-placement="bottom"><i class="fa fa-user fa-2x"></i></a>&nbsp;
@@ -64,7 +66,7 @@
 				  </td>
 		        </tr>
 		        <tr class="animate-repeat" ng-if="results.length == 0 || (results.length == 1 && results[0].id == 0)">
-		          <td colspan="2"><strong>No results found...</strong></td>
+		          <td colspan="3"><strong>No results found...</strong></td>
 		        </tr>
 		        </tbody>
 		    </table>
