@@ -358,7 +358,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					source: vcard_uri
 				};
 				$scope.searchedContacts.push(contact);
-                $scope.$apply();
+                //$scope.$apply();
             }
 		}
     };
