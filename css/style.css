@@ -148,7 +148,7 @@ table {
 	padding: 5px; /*10px*/
 	line-height: 40px;
 	text-align: left;
-	width: 50%;
+	/*width: 40%;*/
 }
 
 .bordered th {
@@ -259,8 +259,16 @@ table {
 	color: white;
 	text-decoration: none;
 }
-
 .noteTitle{
 	font-size: 12px;
 	color: #ea2839;
+}
+.infoView {
+	float:left;
+}
+.photoView {
+	text-align:right	
+}
+.photoColumn{
+	width: 40px;
 }
