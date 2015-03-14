@@ -1,0 +1,27 @@
+<div class="modal-header">
+	<h4 id="modal-title">{{modalTitle}}</h4>
+</div>
+<div class="modal-body">
+	<div class="infoView">
+	<form>
+		<label>WebID</label>
+	       <p name="name" ng-model="viewsearchedcontact.webid" type="text">{{viewsearchedcontact.webid}}</p>
+	    <label>Name</label>
+	       <p name="name" ng-model="viewsearchedcontact.fullname" type="text">{{viewsearchedcontact.fullname}}</p>
+	    <label>Email</label>
+	       <p name="email" ng-model="viewsearchedcontact.email" type="text"><a href="mailto:{{viewsearchedcontact.email}}">{{viewsearchedcontact.email}}</a></p>
+	    <label>Phone</label>
+	       <p name="phone" ng-model="viewsearchedcontact.phone" type="text">{{viewsearchedcontact.phone}}</p>
+	    <br>
+	    <label class="sourceTitle">Source</label>
+	       <p name="phone" ng-model="viewsearchedcontact.source" type="text" class="sourceTitle">{{viewsearchedcontact.source}}</p>
+	</form>
+	</div>
+	<div class="photoView">
+		<img src="{{viewsearchedcontact.photo}}" alt="{{viewsearchedcontact.photo}}" width="90px" height="90px">
+	</div>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-success" ng-click="import(viewsearchedcontact, 'viewsearchedcontact')">Import</button>
+	<button class="btn" ng-click="closeSearchViewer()">Cancel</button>
+</div>
