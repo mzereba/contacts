@@ -107,8 +107,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.addProfile = function() {
-    	$scope.modalTitle = "Create Profile";
-    	$scope.noteTitle = "Warning: you currently do not have a profile, please create one!";
+    	$scope.modalTitle = "Create vCard";
+    	$scope.noteTitle = "Warning: you currently do not have a vCard, please create one!";
     	$scope.editProfileModal = true;
     	$scope.isFocused = true;
     };
@@ -125,7 +125,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	if($scope.contact == undefined){
    			$scope.addProfile();
    		}else{
-	    	$scope.modalTitle = "Edit Profile";
+	    	$scope.modalTitle = "Edit vCard";
 	    	$scope.noteTitle = "";
 	    	$scope.editProfileModal = true;
 	    	$scope.newcontact = angular.copy($scope.get(0));
@@ -269,11 +269,17 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
 					var sPhone = phone.split(":");
 					
+					var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
+					
+					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+					
 					var contact = {
 					    id: sId[1],
 					    fullname: fullname,
 					    email: sEmail[1],
-					    phone: sPhone[1] 
+					    phone: sPhone[1],
+						webid: uid,
+						photo: pic
 					};
 					$scope.contacts.push(contact);
                     $scope.$apply();
@@ -359,9 +365,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           data: q,
           //*
           headers: {
-        	  'Content-Type': 'text/turtle',
-        	//'Accept': 'text/turtle',
-        	//'Access-Control-Allow-Origin': '*'
+        	'Content-Type': 'text/plain',
+        	'Accept': 'text/turtle'
           },//*/
           withCredentials: true
         }).
@@ -486,7 +491,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           "a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#fn> \"" + contact.fullname + "\" ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
-          "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> .\n";
+          "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> ;\n" +
+          "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contact.webid + "> ;\n" +
+          "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> .\n";
        return rdf;
     };
        

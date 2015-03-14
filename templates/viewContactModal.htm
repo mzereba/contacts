@@ -3,6 +3,8 @@
 </div>
 <div class="modal-body">
 	<form>
+		<label>WebID</label>
+	       <p name="name" ng-model="viewcontact.webid" type="text">{{viewcontact.webid}}</p>
 	    <label>Name</label>
 	       <p name="name" ng-model="viewcontact.fullname" type="text">{{viewcontact.fullname}}</p>
 	    <label>Email</label>
@@ -10,6 +12,7 @@
 	    <label>Phone</label>
 	       <p name="phone" ng-model="viewcontact.phone" type="text">{{viewcontact.phone}}</p>
 	</form>
+	<img src="{{viewcontact.photo}}" alt="{{viewcontact.photo}}"> 
 </div>
 <div class="modal-footer">
 	<button class="btn" ng-click="closeViewer()">Cancel</button>

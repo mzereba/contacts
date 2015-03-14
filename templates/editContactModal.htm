@@ -3,13 +3,17 @@
 </div>
 <div class="modal-body">
 	<form>
+		<label>WebID</label>
+	       <input name="name" ng-model="newcontact.webid" ng-focus="isFocused" type="text">
 	    <label>Name</label>
-	       <input name="name" ng-model="newcontact.fullname" ng-focus="isFocused" type="text">
+	       <input name="name" ng-model="newcontact.fullname" type="text">
 	    <label>Email</label>
 	       <input name="email" ng-model="newcontact.email" type="text">
 	    <label>Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
 	    <input ng-model="newcontact.id" type="hidden">
+	    <label>Photo</label>
+	   		<input name="name" ng-model="newcontact.photo" type="text">
 	</form>
 </div>
 <div class="modal-footer">

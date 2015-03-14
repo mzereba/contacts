@@ -29,13 +29,13 @@
 				<i class="fa fa-sign-in fa-2x"></i>
 			</button>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
-				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)" tooltip="My profile" tooltip-placement="bottom">
+				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)" tooltip="Me" tooltip-placement="bottom">
 					<i class="fa fa-user fa-2x"></i> 
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
-					<li><a href="#" ng-click="viewProfile()">View Profile</a></li>
-				  	<li><a href="#" ng-click="editProfile()">Edit Profile</a></li>
+					<li><a href="#" ng-click="viewProfile()">View Me</a></li>
+				  	<li><a href="#" ng-click="editProfile()">Edit Me</a></li>
 				</ul>
 			</div>
 			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!hasAuthenticated(validUser)" />
