@@ -27,6 +27,7 @@ app.directive('ngFocus', function($timeout) {
 
 app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
+	$scope.searchedContacts = [];
     $scope.modalTitle = '';
     $scope.validUser = "no";
     
@@ -45,8 +46,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"<http://www.w3.org/2006/vcard/ns#fn> ?Name ; \n" +
 						"<http://www.w3.org/2006/vcard/ns#hasEmail> ?Email; \n" +
 						"<http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel; \n" +
-						"<http://www.w3.org/2006/vcard/ns#hasUID> " + "\"\"" + "; \n" +
-						"<VCardOwner> ?oWebID. \n" +
+						"<http://www.w3.org/2006/vcard/ns#hasUID> ?vcWebID; \n" +
+						"<http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto. \n" +						
 						"} \n" +
 						"where { \n" +
 						"?oWebID <http://www.w3.org/ns/pim/space#storage> ?Storage . \n" +
@@ -57,6 +58,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"?VCard <http://www.w3.org/2006/vcard/ns#fn> ?Name . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasEmail> ?Email . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel . \n" +
+						"?VCard <http://www.w3.org/2006/vcard/ns#hasUID> ?vcWebID . \n" +
+						"?VCard <http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto . \n" +
 						" \n";
 
     $scope.queryResult = '';
@@ -139,6 +142,12 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.viewcontact = angular.copy($scope.get(id));
     };
     
+    $scope.viewSearched = function(contact) {
+   		$scope.modalTitle = "View Contact";
+    	$scope.viewSearchedContactModal = true;
+    	$scope.viewsearchedcontact = contact;
+    };
+    
     $scope.viewProfile = function() {
     	$scope.contact = angular.copy($scope.get(0));
     	if($scope.contact == undefined){
@@ -172,6 +181,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.query = function(searchcontact) {
+    	$scope.searchedContacts = [];
     	if(searchcontact.fullname != ""){
     		var q = queryTemplate + 
 		    		"FILTER(REGEX(?Name, " + "\"" + searchcontact.fullname + "\"" + ")) \n" +
@@ -205,6 +215,18 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.newcontact = {};
     };
     
+    $scope.import = function(contact, input) {
+        //if this is new contact, add it in contacts array
+		//generate unique id
+    	contact.id = new Date().getTime();
+        $scope.insertContact(contact, CREATE);
+        
+        if(input == 'viewsearchedcontact'){
+	        $scope.viewSearchedContactModal = false;
+	    	$scope.viewsearchedcontact = {};
+        }
+    };
+    
     $scope.closeEditor = function() {
     	$scope.editContactModal = false;
     	$scope.isFocused = false;
@@ -214,6 +236,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.closeSearch = function() {
     	$scope.searchContactModal = false;
     	$scope.isFocused = false;
+    	$scope.searchcontact = {};
+  	  	$scope.queryResult = '';
+  	  	$scope.searchedContacts = [];
     };
     
     $scope.closeProfileEditor = function() {
@@ -226,6 +251,12 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.viewContactModal = false;
     	$scope.viewcontact = {};
     };
+    
+    $scope.closeSearchViewer = function() {
+    	$scope.viewSearchedContactModal = false;
+    	$scope.viewsearchedcontact = {};
+    };
+    
     $scope.closeProfileViewer = function() {
     	$scope.viewProfileModal = false;
     	$scope.viewcontact = {};
@@ -286,6 +317,50 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                 }
 			}
 	    });
+    };
+    
+    //Listing contact resources from response
+    $scope.loadSearched = function (data){
+    	var g = $rdf.graph();
+  	  	var p = $rdf.N3Parser(g, g, "http://crosscloud.qcri.org/LDM/server/RDF/query", "http://crosscloud.qcri.org/LDM/server/RDF/query", null, null, "", null);
+  	  	p.loadBuf(data);
+  	  	
+  	  	var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+		var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+		var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
+		var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+
+		var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
+		if (evs != undefined) {
+			for (var e in evs) {
+				var vcard_uri = evs[e]['subject']['value'];
+				var sId = vcard_uri.split("_"); 
+				
+				var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+				
+				var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
+				var sEmail = email.split(":");
+				
+				var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
+				var sPhone = phone.split(":");
+				
+				var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
+				
+				var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+								
+				var contact = {
+				    id: sId[1],
+				    fullname: fullname,
+				    email: sEmail[1],
+				    phone: sPhone[1],
+					webid: uid,
+					photo: pic,
+					source: vcard_uri
+				};
+				$scope.searchedContacts.push(contact);
+                $scope.$apply();
+            }
+		}
     };
     
     // Getting user storage
@@ -372,9 +447,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
-        	  $scope.queryResult = data;
-        	  //$("#query").val(data);
-        	  $scope.searchcontact = {};
+        	  $scope.queryResult = data; 
+        	  $scope.loadSearched(data);
           }
         }).
         error(function(data, status) {

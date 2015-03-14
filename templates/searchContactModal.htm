@@ -5,8 +5,26 @@
 	<form>
 	    <label>Name</label>
 	       <input name="name" ng-model="searchcontact.fullname" ng-focus="isFocused" type="text">
-	    <label></label>
-		   <textarea style='width: 100%; height: 150px; background-color:#E0E0E0;' ng-if="queryResult != ''">{{queryResult}}</textarea>
+	    <p></p>   
+	    <table class="example-animate-container bordered" ng-if="queryResult != ''">
+		        <thead>
+				<tr>
+					<th class="photoColumn"></th>
+				    <th>Name</th>
+				    <th>Action</th>
+				</tr>
+				</thead>
+				<tbody>
+		        <tr class="animate-repeat" ng-repeat="contact in searchedContacts">	
+		          <td class="photoColumn"><img src="{{contact.photo}}" alt="{{contact.photo}}" width="45px" height="45px"></td>
+		          <td>{{contact.fullname}}</td>
+				  <td>
+				  	  <a href="#" ng-click="viewSearched(contact)" tooltip="View" tooltip-placement="bottom"><i class="fa fa-user fa-2x"></i></a>&nbsp;
+				  	  <a href="#" ng-click="import(contact, 'searchcontact')" tooltip="Import" tooltip-placement="bottom"><i class="fa fa-cloud-download fa-2x"></i></a>&nbsp;
+				  </td>
+		        </tr>
+		        </tbody>
+		    </table>
 	</form>
 </div>
 <div class="modal-footer">

@@ -24,7 +24,7 @@
 		<div id="header">
 			<i class="fa fa-group"></i> 
 			Contacts 
-			<a class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</a><a class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</a> 
+			<!-- <a class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</a><a class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</a>  -->
 			<button class="btn btn-warning block" ng-click="login()" tooltip="Login" tooltip-placement="bottom" tooltip-size="small">
 				<i class="fa fa-sign-in fa-2x"></i>
 			</button>
@@ -77,5 +77,6 @@
 		<div modal="editProfileModal" ng-include="'templates/editProfileModal.htm'" close="cancel()" ></div>
 		<div modal="viewProfileModal" ng-include="'templates/viewProfileModal.htm'" close="cancel()" ></div>
 		<div modal="searchContactModal" ng-include="'templates/searchContactModal.htm'" close="cancel()" ></div>
+		<div modal="viewSearchedContactModal" ng-include="'templates/viewSearchedContactModal.htm'" close="cancel()" ></div>
 	</body>
 </html>
