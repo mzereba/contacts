@@ -32,7 +32,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.validUser = "no";
     
     $scope.user = '';
-    $scope.storage = '';	
+    $scope.storage = '';
+    $scope.endpoint = '';	
     $scope.path = 	
     $scope.prefix = "vcard_";
     var CREATE = 0;
@@ -54,15 +55,16 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"?Storage <http://www.w3.org/ns/ldp#contains> ?Contacts . \n" +
 						"?Contacts <http://purl.org/dc/terms/title> \"contacts\" . \n" +
 						"?Contacts <http://www.w3.org/ns/ldp#contains> ?VCard . \n" +
-						"?VCard a <http://www.w3.org/2006/vcard/ns#Individual> . \n" +
+						"?VCard a <http://www.w3.org/2006/vcard/ns#Individual> . \n" + 
+    					"?VCard <http://www.w3.org/2006/vcard/ns#hasKey> \"Public\" . \n" + 
 						"?VCard <http://www.w3.org/2006/vcard/ns#fn> ?Name . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasEmail> ?Email . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasUID> ?vcWebID . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto . \n" +
-						" \n";
+						" \n"; 
 
-    $scope.queryResult = '';
+    $scope.queryResult = '0';
     
     $scope.status = {
     	isopen: false
@@ -87,7 +89,17 @@ app.controller('ContactController', function ($scope, $http, $sce) {
             }
         }
     };
-       
+    
+    // Simply search contacts list for given contact
+    // and replaces the contact object if found
+    $scope.replace = function (contact) {
+        for (i in $scope.contacts) {
+            if ($scope.contacts[i].id == contact.id) {
+                $scope.contacts[i] = contact;
+            }
+        }
+    };
+     
     $scope.login = function() {
     	 $scope.authenticationModal = true;	 
     };
@@ -100,12 +112,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.add = function() {
     	$scope.modalTitle = "New Contact";
     	$scope.editContactModal = true;
+    	$scope.newcontact = {}
+    	$scope.newcontact.visibility = "Private";
     	$scope.isFocused = true;
     };
     
     $scope.search = function() {
     	$scope.modalTitle = "Search Contact";
     	$scope.searchContactModal = true;
+    	$scope.searchcontact = {};
     	$scope.isFocused = true;
     };
     
@@ -113,6 +128,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.modalTitle = "Create vCard";
     	$scope.noteTitle = "Warning: you currently do not have a vCard, please create one!";
     	$scope.editProfileModal = true;
+    	$scope.newcontact = {}
+    	$scope.newcontact.webid = $scope.user;
     	$scope.isFocused = true;
     };
     
@@ -128,7 +145,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	if($scope.contact == undefined){
    			$scope.addProfile();
    		}else{
-	    	$scope.modalTitle = "Edit vCard";
+	    	$scope.modalTitle = "Edit Me";
 	    	$scope.noteTitle = "";
 	    	$scope.editProfileModal = true;
 	    	$scope.newcontact = angular.copy($scope.get(0));
@@ -189,23 +206,21 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					"} \n";
     		
     		$scope.searchContact(q);
-    	
-    	}else{
-    		alert("Please enter a search value");
-    	}
+    	}else
+    		alert("Please enter a value for the search");
     };
        
     $scope.saveProfile = function(newcontact) {
     	if (newcontact.id == null) {
             //if this is new contact, add it in contacts array
             newcontact.id = 0; // Generate unique id
-            $scope.insertContact(newcontact);
+            $scope.insertContact(newcontact, CREATE);
         } else {
             //for existing contact, find this contact using id
             //and update it.
             for (i in $scope.contacts) {
                 if ($scope.contacts[i].id == newcontact.id) {
-                	$scope.insertContact(newcontact);
+                	$scope.insertContact(newcontact, UPDATE);
                 }
             }
         }
@@ -234,11 +249,11 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.closeSearch = function() {
+    	$scope.queryResult = '';
+  	  	$scope.searchedContacts = [];
     	$scope.searchContactModal = false;
     	$scope.isFocused = false;
-    	$scope.searchcontact = {};
-  	  	$scope.queryResult = '';
-  	  	$scope.searchedContacts = [];
+  	  	$scope.searchcontact = {};
     };
     
     $scope.closeProfileEditor = function() {
@@ -304,13 +319,16 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					
 					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
 					
+					var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
+					
 					var contact = {
 					    id: sId[1],
 					    fullname: fullname,
 					    email: sEmail[1],
 					    phone: sPhone[1],
 						webid: uid,
-						photo: pic
+						photo: pic,
+						visibility: key
 					};
 					$scope.contacts.push(contact);
                     $scope.$apply();
@@ -386,10 +404,39 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                 }
 			}
 			
+            //$scope.getEndPoint($scope.storage);
 			$scope.isContactsContainer();
 	    });
 	    
 	    
+    };
+    
+    // Getting user endpoint
+    $scope.getEndPoint = function (storage) {
+		var aDomain = storage.split("/");
+    	var uri= "http://" + aDomain[2] + "/.wellknown";
+    	$http({
+            method: 'GET', 
+            url: uri,
+            headers: {
+          	'Accept': 'text/turtle'
+            },
+            withCredentials: true
+          }).
+          success(function(data, status, headers) {
+            if (status == 200 || status == 201) {
+            	$scope.endpoint = data;
+            }
+          }).
+          error(function(data, status) {
+            if (status == 401) {
+              notify('Forbidden', 'Authentication required to create new resource.');
+            } else if (status == 403) {
+              notify('Forbidden', 'You are not allowed to create new resource.');
+            } else {
+              notify('Failed '+ status + data);
+            }
+          });
     };
     
     // Insert or update a contact resource
@@ -413,9 +460,10 @@ app.controller('ContactController', function ($scope, $http, $sce) {
             	//update view
             	$scope.contacts.push(contact);
             }
-            else 
+            else {
             	notify('Success', 'Resource updated.');
-           
+    	    	$scope.replace(contact);
+          	}
             $scope.newcontact = {};
           }
         }).
@@ -432,23 +480,22 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     // Search contacts using link following
     $scope.searchContact = function (q) {
-    	var uri = "http://crosscloud.qcri.org/LDM/server/RDF/query";
-    	//var uri = $scope.path;
+    	var uri = $scope.endpoint;
         $http({
           method: 'POST', 
           url: uri,
           data: q,
-          //*
           headers: {
         	'Content-Type': 'text/plain',
         	'Accept': 'text/turtle'
-          },//*/
+          },
           withCredentials: true
         }).
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
-        	  $scope.queryResult = data; 
+       		  $scope.queryResult = data;
         	  $scope.loadSearched(data);
+        	  $scope.searchcontact = {};
           }
         }).
         error(function(data, status) {
@@ -567,7 +614,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
           "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contact.webid + "> ;\n" +
-          "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> .\n";
+          "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> ;\n" +
+       "<http://www.w3.org/2006/vcard/ns#hasKey> \"" + contact.visibility + "\" .\n";
        return rdf;
     };
        

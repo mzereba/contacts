@@ -2,9 +2,10 @@
 	<h4 id="modal-title">{{modalTitle}}</h4>
 </div>
 <div class="modal-body">
+	<div class="infoView">
 	<form>
 	    <label>WebID</label>
-	       <input name="name" ng-model="user" ng-focus="isFocused" type="text">
+	       <input name="name" ng-model="newcontact.webid" ng-focus="isFocused" type="text">
 	    <label>Name</label>
 	       <input name="name" ng-model="newcontact.fullname" type="text">
 	    <label>Email</label>
@@ -12,9 +13,12 @@
 	    <label>Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
 	    <input ng-model="newcontact.id" type="hidden">
-	    <label>Photo</label>
-	   		<input name="name" ng-model="newcontact.photo" type="text">
 	</form>
+	</div>
+	<div class="photoView">
+		<label>Photo</label>
+	   	   <input name="name" ng-model="newcontact.photo" type="text">
+	</div>
 	<p class="noteTitle" id="note-Title">{{noteTitle}}</p>
 </div>
 <div class="modal-footer">

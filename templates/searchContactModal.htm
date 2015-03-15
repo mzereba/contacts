@@ -3,28 +3,29 @@
 </div>
 <div class="modal-body">
 	<form>
-	    <label>Name</label>
-	       <input name="name" ng-model="searchcontact.fullname" ng-focus="isFocused" type="text">
+	    <input name="name" placeholder="Search name..." ng-model="searchcontact.fullname" ng-focus="isFocused" type="text">
 	    <p></p>   
-	    <table class="example-animate-container bordered" ng-if="queryResult != ''">
-		        <thead>
-				<tr>
-					<th class="photoColumn"></th>
-				    <th>Name</th>
-				    <th>Action</th>
-				</tr>
-				</thead>
-				<tbody>
-		        <tr class="animate-repeat" ng-repeat="contact in searchedContacts">	
-		          <td class="photoColumn"><img src="{{contact.photo}}" alt="{{contact.photo}}" width="45px" height="45px"></td>
-		          <td>{{contact.fullname}}</td>
-				  <td>
-				  	  <a href="#" ng-click="viewSearched(contact)" tooltip="View" tooltip-placement="bottom"><i class="fa fa-user fa-2x"></i></a>&nbsp;
-				  	  <a href="#" ng-click="import(contact, 'searchcontact')" tooltip="Import" tooltip-placement="bottom"><i class="fa fa-cloud-download fa-2x"></i></a>&nbsp;
-				  </td>
-		        </tr>
-		        </tbody>
-		    </table>
+	    <table class="example-animate-container bordered" ng-if="queryResult != '0'">
+	        <thead>
+			<tr>
+				<th class="photoColumn"></th>
+			    <th>Name</th>
+			    <th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
+	        <tr class="animate-repeat" ng-repeat="contact in searchedContacts">	
+	          <td class="photoColumn"><img src="{{contact.photo}}" alt="{{contact.photo}}" width="45px" height="45px"></td>
+	          <td>{{contact.fullname}}</td>
+			  <td>
+			  	  <a href="#" ng-click="viewSearched(contact)" tooltip="View" tooltip-placement="bottom"><i class="fa fa-user fa-2x"></i></a>&nbsp;
+			  	  <a href="#" ng-click="import(contact, '')" tooltip="Import" tooltip-placement="bottom"><i class="fa fa-cloud-download fa-2x"></i></a>&nbsp;
+			  </td>
+	        </tr>
+	        <tr ng-if="queryResult == ''">
+	          <td colspan="3"><strong>No results found...</strong></td>
+	        </tr>
+	    </table>
 	</form>
 </div>
 <div class="modal-footer">
