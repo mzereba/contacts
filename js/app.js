@@ -50,7 +50,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"<http://www.w3.org/2006/vcard/ns#hasUID> ?vcWebID; \n" +
 						"<http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto. \n" +						
 						"} \n" +
-						"where { \n" +
+						"wherever { \n" +
 						"?oWebID <http://www.w3.org/ns/pim/space#storage> ?Storage . \n" +
 						"?Storage <http://www.w3.org/ns/ldp#contains> ?Contacts . \n" +
 						"?Contacts <http://purl.org/dc/terms/title> \"contacts\" . \n" +
