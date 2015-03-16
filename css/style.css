@@ -280,3 +280,6 @@ table {
 .visibilityTitle{
 	margin-top:10px;
 }
+.thumbnail {
+	height: 45px; width: 45px;
+}
