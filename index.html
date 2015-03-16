@@ -57,7 +57,7 @@
 				</thead>
 				<tbody>
 		        <tr class="animate-repeat" ng-repeat="contact in list | filter:q as results" ng-if="contact.id != 0">	
-		          <td class="photoColumn"><img src="{{contact.photo}}" alt="{{contact.photo}}" width="45px" height="45px"></td>
+		          <td class="photoColumn"><img src="{{contact.photo}}" alt="{{contact.photo}}"></td>
 		          <td>{{contact.fullname}}</td>
 				  <td>
 				  	  <a href="#" ng-click="view(contact.id)" tooltip="View" tooltip-placement="bottom"><i class="fa fa-user fa-2x"></i></a>&nbsp;
