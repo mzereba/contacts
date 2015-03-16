@@ -404,7 +404,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                 }
 			}
 			
-            //$scope.getEndPoint($scope.storage);
+            $scope.getEndPoint($scope.storage);
 			$scope.isContactsContainer();
 	    });
 	    
