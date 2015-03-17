@@ -51,6 +51,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"<http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto. \n" +						
 						"} \n" +
 						"wherever { \n" +
+						"?lVCard a <http://www.w3.org/2006/vcard/ns#Individual> . \n" + 
+						"?lVCard <http://www.w3.org/2006/vcard/ns#hasUID> ?oWebID . \n" +
 						"?oWebID <http://www.w3.org/ns/pim/space#storage> ?Storage . \n" +
 						"?Storage <http://www.w3.org/ns/ldp#contains> ?Contacts . \n" +
 						"?Contacts <http://purl.org/dc/terms/title> \"contacts\" . \n" +
@@ -64,7 +66,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto . \n" +
 						" \n"; 
 
-    $scope.queryResult = '0';
+    $scope.queryResult = 'null';
     
     $scope.status = {
     	isopen: false
@@ -249,7 +251,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.closeSearch = function() {
-    	$scope.queryResult = '0';
+    	$scope.queryResult = 'null';
   	  	$scope.searchedContacts = [];
     	$scope.searchContactModal = false;
     	$scope.isFocused = false;
