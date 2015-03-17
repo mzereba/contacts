@@ -48,7 +48,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"<http://www.w3.org/2006/vcard/ns#hasEmail> ?Email; \n" +
 						"<http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel; \n" +
 						"<http://www.w3.org/2006/vcard/ns#hasUID> ?vcWebID; \n" +
-						"<http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto. \n" +						
+						"<http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto; \n" +
+						"<http://www.w3.org/2006/vcard/ns#hasKey> \"Public\" . \n" +
 						"} \n" +
 						"wherever { \n" +
 						"?lVCard a <http://www.w3.org/2006/vcard/ns#Individual> . \n" + 
@@ -367,6 +368,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 				var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
 				
 				var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+				
+				var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
 								
 				var contact = {
 				    id: sId[1],
@@ -375,6 +378,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 				    phone: sPhone[1],
 					webid: uid,
 					photo: pic,
+					visibility: key,
 					source: vcard_uri
 				};
 				$scope.searchedContacts.push(contact);
