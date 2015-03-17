@@ -249,7 +249,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.closeSearch = function() {
-    	$scope.queryResult = '';
+    	$scope.queryResult = '0';
   	  	$scope.searchedContacts = [];
     	$scope.searchContactModal = false;
     	$scope.isFocused = false;
