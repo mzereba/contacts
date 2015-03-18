@@ -129,7 +129,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.addProfile = function() {
     	$scope.modalTitle = "Create vCard";
-    	$scope.noteTitle = "Warning: you currently do not have a vCard, please create one!";
+    	$scope.noteTitle = "Warning: you do not have a vCard, please create one!";
     	$scope.editProfileModal = true;
     	$scope.newcontact = {}
     	$scope.newcontact.webid = $scope.user;

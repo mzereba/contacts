@@ -261,6 +261,7 @@ table {
 	text-decoration: none;
 }
 .noteTitle{
+	margin-top: 15px;
 	font-size: 12px;
 	color: #ea2839;
 }
