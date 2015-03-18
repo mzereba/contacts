@@ -13,13 +13,13 @@
 	    <label>Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
 	    <input ng-model="newcontact.id" type="hidden">
+	    <p class="noteTitle" id="note-Title">{{noteTitle}}</p>
 	</form>
 	</div>
 	<div class="photoView">
 		<label>Photo</label>
 	   	   <input name="name" ng-model="newcontact.photo" type="text">
 	</div>
-	<p class="noteTitle" id="note-Title">{{noteTitle}}</p>
 </div>
 <div class="modal-footer">
 <button class="btn btn-success" ng-click="saveProfile(newcontact)">Save</button>
