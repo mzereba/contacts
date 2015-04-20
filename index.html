@@ -25,11 +25,10 @@
 			<i class="fa fa-group"></i> 
 			Contacts 
 			<!-- <a class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</a><a class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</a>  -->
-			<button class="btn btn-warning block" ng-click="login()" tooltip="Login" tooltip-placement="bottom" tooltip-size="small">
-				<i class="fa fa-sign-in fa-2x"></i>
-			</button>
+			<button class="btn btn-warning block" ng-hide="loggedin" ng-click="openAuth()" tooltip="Login / Signup" tooltip-placement="bottom" tooltip-size="small"><i class="fa fa-sign-in fa-2x"></i></button>
+			<button class="btn btn-warning block" ng-show="loggedin" ng-click="logout()" tooltip="Logout" tooltip-placement="bottom" tooltip-size="small"><i class="fa fa-sign-out fa-2x"></i></button>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
-				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!hasAuthenticated(validUser)" tooltip="Me" tooltip-placement="bottom">
+				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!loggedin" tooltip="Me" tooltip-placement="bottom">
 					<i class="fa fa-user fa-2x"></i> 
 					<span class="caret"></span>
 				</button>
@@ -38,11 +37,11 @@
 				  	<li><a href="#" ng-click="editProfile()">Edit Me</a></li>
 				</ul>
 			</div>
-			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!hasAuthenticated(validUser)" />
-			<button class="btn btn-default block" ng-click="add()" ng-disabled="!hasAuthenticated(validUser)" tooltip="Add contact" tooltip-placement="bottom">
+			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!loggedin" />
+			<button class="btn btn-default block" ng-click="add()" ng-disabled="!loggedin" tooltip="Add contact" tooltip-placement="bottom">
 				<i class="fa fa-user-plus fa-2x"></i>
 			</button>
-			<button class="btn btn-default block" ng-click="search()" ng-disabled="!hasAuthenticated(validUser)" tooltip="Search" tooltip-placement="bottom">
+			<button class="btn btn-default block" ng-click="search()" ng-disabled="!loggedin" tooltip="Search" tooltip-placement="bottom">
 				<i class="fa fa-search fa-2x"></i>
 			</button>
 		</div>

@@ -29,19 +29,18 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
 	$scope.searchedContacts = [];
     $scope.modalTitle = '';
-    $scope.validUser = "no";
+    $scope.loggedin = false;
     
-    $scope.user = '';
-    $scope.storage = '';
+    $scope.userProfile = {};
     $scope.endpoint = '';	
-    $scope.path = 	
+    $scope.path = '';	
     $scope.prefix = "vcard_";
     var CREATE = 0;
     var UPDATE = 1;
         
     var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
     $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
-    
+           
     var queryTemplate = "construct { \n" +
 						"?VCard a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ; \n" +
 						"<http://www.w3.org/2006/vcard/ns#fn> ?Name ; \n" +
@@ -65,9 +64,44 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasTelephone> ?Tel . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasUID> ?vcWebID . \n" +
 						"?VCard <http://www.w3.org/2006/vcard/ns#hasPhoto> ?vcPhoto . \n" +
+						//"FILTER(!REGEX(str(?lVCard), \"vcard_0\")) \n" +
+						//"FILTER(str(?lVCard) != str(?VCard)) \n" + 
+						//"filter ( !regex(str(?VCard), \"vcard_0\")  ) \n"
 						" \n"; 
 
     $scope.queryResult = 'null';
+    
+    // Define the appuri, used as key when saving to sessionStorage
+    $scope.appuri = window.location.origin;
+    
+    // Save profile object in sessionStorage after login
+    $scope.saveCredentials = function () {
+        var app = {};
+        var _user = {};
+        app.userProfile = $scope.userProfile;
+        sessionStorage.setItem($scope.appuri, JSON.stringify(app));
+    };
+
+    // Clear sessionStorage on logout
+    $scope.clearLocalCredentials = function () {
+        sessionStorage.removeItem($scope.appuri);
+    };
+    
+    $scope.logout = function() {
+    	$scope.contacts = [];
+    	$scope.userProfile = {};
+    	$scope.clearLocalCredentials();
+    	$scope.loggedin = false;
+    };
+    
+    $scope.authenticate = function(webid) {
+        if (webid.slice(0,4) == 'http') {
+        	$scope.loggedin = true;
+            notify('Success', 'Authenticated user.');
+        } else {
+            notify('Failed', 'Authentication failed.');
+        }
+    };
     
     $scope.status = {
     	isopen: false
@@ -103,15 +137,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }
     };
      
-    $scope.login = function() {
-    	 $scope.authenticationModal = true;	 
-    };
-    
-    $scope.hasAuthenticated = function(value) {
-        //alert(value);
-        return "yes"==value;
-    };
-    
     $scope.add = function() {
     	$scope.modalTitle = "New Contact";
     	$scope.editContactModal = true;
@@ -280,19 +305,14 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.viewcontact = {};
     };
     
+    $scope.openAuth = function() {
+    	$scope.authenticationModal = true;	 
+    };
+    
     $scope.closeAuth = function() {
     	$scope.authenticationModal = false;
     };
-    
-    $scope.authenticate = function(webid) {
-        if (webid.slice(0,4) == 'http') {
-        	$scope.validUser = "yes";
-            notify('Success', 'Authenticated user.');
-        } else {
-            notify('Failed', 'Authentication failed.');
-        }
-    };
-        
+           
     // Listing contact resources
     $scope.load = function () {
 		var g = $rdf.graph();
@@ -391,7 +411,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.getStorage = function () {
 		var g = $rdf.graph();
 	    var f = $rdf.fetcher(g);
-	    var uri = $scope.user.slice(0,$scope.user.length-3);
+	    //var uri = $scope.user.slice(0,$scope.user.length-3);
+	    var uri = ($scope.userProfile.webid.indexOf('#') >= 0)?$scope.userProfile.webid.slice(0, $scope.userProfile.webid.indexOf('#')):$scope.userProfile.webid;
 	    
 	    f.nowOrWhenFetched(uri ,undefined,function(){	
 		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
@@ -405,12 +426,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 				for (var e in evs) {
 					var s = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
 					
-					$scope.storage = s;
+					$scope.userProfile.storage = s;
+					$scope.saveCredentials();
                     $scope.$apply();
                 }
 			}
 			
-            $scope.getEndPoint($scope.storage);
+            $scope.getEndPoint($scope.userProfile.storage);
 			$scope.isContactsContainer();
 	    });
 	    
@@ -583,7 +605,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
        
     // Check if contacts dir exists, if not create it
     $scope.isContactsContainer = function () {
-    	var uri = $scope.storage + "contacts/";
+    	var uri = $scope.userProfile.storage + "contacts/";
         $http({
           method: 'HEAD',
           url: uri,
@@ -620,7 +642,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
           "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contact.webid + "> ;\n" +
-          "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> ;\n" +
        "<http://www.w3.org/2006/vcard/ns#hasKey> \"" + contact.visibility + "\" .\n";
        return rdf;
     };
@@ -632,12 +653,30 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     eventListener(messageEvent,function(e) {
         if (e.data.slice(0,5) == 'User:') {          
             $scope.authenticate(e.data.slice(5, e.data.length));
-            $scope.user = e.data.slice(5);
+            $scope.userProfile.webid = e.data.slice(5);
             //get user storage and assign contacts dir
             $scope.getStorage();
         }
         
         $scope.closeAuth();
     },false);
+    
+    // Retrieve from sessionStorage
+    if (sessionStorage.getItem($scope.appuri)) {
+        var app = JSON.parse(sessionStorage.getItem($scope.appuri));
+        if (app.userProfile) {
+          //if (!$scope.userProfile) {
+          //  $scope.userProfile = {};
+          //}
+          $scope.userProfile = app.userProfile;
+          $scope.path = $scope.userProfile.storage + "contacts/";
+          $scope.load();
+          $scope.loggedin = true;
+        } else {
+          // clear sessionStorage in case there was a change to the data structure
+          sessionStorage.removeItem($scope.appuri);
+        }
+    }
+    
 });
 
