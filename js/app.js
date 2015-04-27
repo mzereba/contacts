@@ -37,9 +37,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.prefix = "vcard_";
     var CREATE = 0;
     var UPDATE = 1;
-        
-    var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
-    $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
            
     var queryTemplate = "construct { \n" +
 						"?VCard a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ; \n" +
@@ -71,6 +68,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 
     $scope.queryResult = 'null';
     
+    var providerURI = '//linkeddata.github.io/signup/index.html?ref=';
+    $scope.widgetURI = $sce.trustAsResourceUrl(providerURI+window.location.protocol+'//'+window.location.host);
+    
     // Define the appuri, used as key when saving to sessionStorage
     $scope.appuri = window.location.origin;
     
@@ -88,10 +88,10 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.logout = function() {
-    	$scope.contacts = [];
     	$scope.userProfile = {};
     	$scope.clearLocalCredentials();
     	$scope.loggedin = false;
+    	$scope.contacts.length = 0;
     };
     
     $scope.authenticate = function(webid) {
