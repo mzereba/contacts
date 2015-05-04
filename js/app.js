@@ -88,10 +88,10 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.logout = function() {
+    	$scope.contacts.length = 0;
     	$scope.userProfile = {};
     	$scope.clearLocalCredentials();
     	$scope.loggedin = false;
-    	$scope.contacts.length = 0;
     };
     
     $scope.authenticate = function(webid) {
