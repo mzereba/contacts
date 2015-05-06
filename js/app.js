@@ -356,6 +356,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					$scope.contacts.push(contact);
                     $scope.$apply();
                 }
+				$scope.contacts.sort(function(a, b){
+					 return a.id-b.id
+				})
 			}
 	    });
     };
@@ -642,6 +645,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
           "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contact.webid + "> ;\n" +
+          "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> ;\n" +
        "<http://www.w3.org/2006/vcard/ns#hasKey> \"" + contact.visibility + "\" .\n";
        return rdf;
     };
