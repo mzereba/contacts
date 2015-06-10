@@ -281,6 +281,12 @@ table {
 .visibilityTitle{
 	margin-top:10px;
 }
+.spacedTop{
+	margin-top:60px;
+}
+.spacedBottom{
+	margin-bottom:20px;
+}
 .thumbnail {
 	height: 45px; width: 45px;
 }

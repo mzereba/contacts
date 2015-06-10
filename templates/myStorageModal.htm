@@ -1,0 +1,29 @@
+<div class="modal-header">
+	<h4 id="modal-title">{{modalTitle}}</h4>
+</div>
+<div class="modal-body">
+	<div class="infoView">
+	<form>
+		<label class="spacedBottom">
+			<h4>
+  			<i class="fa fa-database"></i>&nbsp;
+  			My Storage
+ 			</h4>
+ 		</label>
+	       <p type="text" ng-repeat="s in userProfile.contactStorages">{{s}}</p>
+	    <label class="spacedTop spacedBottom">
+			<h4>
+	  			<i class="fa fa-plus"></i>&nbsp;
+	  			Add new storage
+	 		</h4>
+		</label>
+	   		<p>
+	   			<select class="form-control" ng-model="mystorage.workspace" ng-options="w for w in workspaces"><option></option></select>&nbsp;/&nbsp;<input ng-model="mystorage.storagename" ng-focus="isFocused" type="text" placeholder="container name...">
+			</p>
+		<button class="btn btn-success" ng-click="createNewStorage(mystorage)">Save</button>
+	</form>
+	</div>
+</div>
+<div class="modal-footer">
+	<button class="btn" ng-click="closeMyStorage()">Close</button>
+</div>

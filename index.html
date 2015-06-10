@@ -27,7 +27,9 @@
 			<!-- <a class="contactsCount" ng-if="list.length > 0 && contacts[0].id != 0">({{list.length}})</a><a class="contactsCount" ng-if="list.length > 0 && contacts[0].id == 0">({{list.length-1}})</a>  -->
 			<button class="btn btn-warning block" ng-hide="loggedin" ng-click="openAuth()" tooltip="Login / Signup" tooltip-placement="bottom" tooltip-size="small"><i class="fa fa-sign-in fa-2x"></i></button>
 			<button class="btn btn-warning block" ng-show="loggedin" ng-click="logout()" tooltip="Logout" tooltip-placement="bottom" tooltip-size="small"><i class="fa fa-sign-out fa-2x"></i></button>
-			<div class="dropdownblock" ng-if="contacts[0].photo != null"><img src="{{contacts[0].photo}}" alt="{{contacts[0].photo}}" style="border:1px solid white;width: 40px;" ng-if="contacts[0].id == 0" ng-show="loggedin"></div>
+			<div class="dropdownblock" ng-if="userProfile.image != null" tooltip="{{userProfile.fullname}}" tooltip-placement="bottom">
+				<img src="{{userProfile.image}}" alt="{{userProfile.image}}" style="border:1px solid white;width: 40px;" ng-show="loggedin">
+			</div>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
 				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!loggedin" tooltip="Me" tooltip-placement="bottom">
 					<i class="fa fa-user fa-2x"></i> 
@@ -36,6 +38,7 @@
 				<ul class="dropdown-menu" role="menu">
 					<li><a href="#" ng-click="viewProfile()">View Me</a></li>
 				  	<li><a href="#" ng-click="editProfile()">Edit Me</a></li>
+				  	<li><a href="#" ng-click="myStorage()">My Storage</a></li>
 				</ul>
 			</div>
 			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!loggedin" />
@@ -78,5 +81,6 @@
 		<div modal="viewProfileModal" ng-include="'templates/viewProfileModal.htm'" close="cancel()" ></div>
 		<div modal="searchContactModal" ng-include="'templates/searchContactModal.htm'" close="cancel()" ></div>
 		<div modal="viewSearchedContactModal" ng-include="'templates/viewSearchedContactModal.htm'" close="cancel()" ></div>
+		<div modal="myStorageModal" ng-include="'templates/myStorageModal.htm'" close="cancel()" ></div>
 	</body>
 </html>

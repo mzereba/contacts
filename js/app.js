@@ -28,6 +28,7 @@ app.directive('ngFocus', function($timeout) {
 app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
 	$scope.searchedContacts = [];
+	$scope.workspaces = [];
     $scope.modalTitle = '';
     $scope.loggedin = false;
     
@@ -35,6 +36,10 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.endpoint = '';	
     $scope.path = '';	
     $scope.prefix = "vcard_";
+    $scope.metadata = "app-contacts.metadata";
+    $scope.appurl = "http://mzereba.github.io/contacts/";
+    $scope.apptypes = "http://www.w3.org/2006/vcard";
+    $scope.defaultstorage = "Private/Contacts/";
     var CREATE = 0;
     var UPDATE = 1;
            
@@ -204,6 +209,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
    		}
     };
     
+    $scope.myStorage = function() {
+    	$scope.modalTitle = "My Storage";
+    	$scope.myStorageModal = true;
+    	$scope.mystorage = {}
+    	$scope.isFocused = true;
+    };
+    
     $scope.save = function(newcontact) {
     	if (newcontact.id == null) {
             //if this is new contact, add it in contacts array
@@ -258,6 +270,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.newcontact = {};
     };
     
+    $scope.createNewStorage = function(mystorage) {
+    	
+    	var storage = mystorage.workspace + mystorage.storagename + "/";
+    	var workspace = mystorage.workspace;
+    	var uri = $scope.userProfile.preferencesDir+$scope.metadata;
+    	$scope.createMetadata(uri, UPDATE, storage);
+    	$scope.mystorage = {};
+    };
+    
     $scope.import = function(contact, input) {
         //if this is new contact, add it in contacts array
 		//generate unique id
@@ -305,6 +326,12 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.viewcontact = {};
     };
     
+    $scope.closeMyStorage = function() {
+    	$scope.myStorageModal = false;
+    	$scope.isFocused = false;
+    	$scope.mystorage = {};
+    };
+    
     $scope.openAuth = function() {
     	$scope.authenticationModal = true;	 
     };
@@ -312,55 +339,69 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.closeAuth = function() {
     	$scope.authenticationModal = false;
     };
+    
+    $scope.isVisible = function (storage){
+    	var split = storage.split("/");
+	    var match = "";
+    	for(var i=0; i<split.length-2; i++){
+    		match += split[i] + "/";
+	    }
+    	 return $scope.userProfile.visibleWorkspaces.indexOf(match);
+    }
            
     // Listing contact resources
     $scope.load = function () {
 		var g = $rdf.graph();
 	    var f = $rdf.fetcher(g);
+	    $scope.contacts.length = 0;
 	    
-	    f.nowOrWhenFetched($scope.path + '*',undefined,function(){	
-		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
-			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
-			var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
-	
-			var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
-			if (evs != undefined) {
-				for (var e in evs) {
-					var id = evs[e]['subject']['value'];
-					var sId = id.split("_"); 
+	    for (var i in $scope.userProfile.contactStorages) {
+	    	if($scope.isVisible($scope.userProfile.contactStorages[i]) != -1) {
+			    f.nowOrWhenFetched($scope.userProfile.contactStorages[i] + '*',undefined,function(){	
+				    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+					var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+					var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
+					var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
 					
-					var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
-					
-					var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
-					var sEmail = email.split(":");
-					
-					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
-					var sPhone = phone.split(":");
-					
-					var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
-					
-					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
-					
-					var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
-					
-					var contact = {
-					    id: sId[1],
-					    fullname: fullname,
-					    email: sEmail[1],
-					    phone: sPhone[1],
-						webid: uid,
-						photo: pic,
-						visibility: key
-					};
-					$scope.contacts.push(contact);
-                    $scope.$apply();
-                }
-				$scope.contacts.sort(function(a, b){
-					 return a.id-b.id
-				})
-			}
-	    });
+					var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
+					if (evs != undefined) {
+						for (var e in evs) {
+							var id = evs[e]['subject']['value'];
+							var sId = id.split("_"); 
+							
+							var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+							
+							var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
+							var sEmail = email.split(":");
+							
+							var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
+							var sPhone = phone.split(":");
+							
+							var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
+							
+							var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+							
+							var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
+							
+							var contact = {
+							    id: sId[1],
+							    fullname: fullname,
+							    email: sEmail[1],
+							    phone: sPhone[1],
+								webid: uid,
+								photo: pic,
+								visibility: key
+							};
+							$scope.contacts.push(contact);
+		                    $scope.$apply();
+		                }
+						$scope.contacts.sort(function(a, b){
+							 return a.id-b.id
+						})
+					}
+			    });
+	    	}
+	    }
     };
     
     //Listing contact resources from response
@@ -410,6 +451,36 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 		}
     };
     
+    // Gets workspaces
+    $scope.getWorkspaces = function () {
+		var g = $rdf.graph();
+	    var f = $rdf.fetcher(g);
+	    var uri = $scope.userProfile.preferencesFile;
+	    
+	    f.nowOrWhenFetched(uri + '*',undefined,function(){	
+		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+			var TYPE = $rdf.Namespace('https://example.com/');
+			var SPACE = $rdf.Namespace('http://www.w3.org/ns/pim/space#');
+	
+			var evs = g.statementsMatching(undefined, RDF('type'), TYPE('prefs'));
+			if (evs != undefined) {
+				for (var e in evs) {
+					var ws = g.statementsMatching(evs[e]['subject'], SPACE('workspace'));
+					
+					for (var s in ws) {
+						var workspace = ws[s]['object']['value'];
+						$scope.workspaces.push(workspace);
+					}
+										
+                    $scope.$apply();
+                }
+			}
+			
+			$scope.isMetadataExisting();
+	    });
+    };
+    
     // Getting user storage
     $scope.getStorage = function () {
 		var g = $rdf.graph();
@@ -427,19 +498,72 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 			var evs = g.statementsMatching(undefined, RDF('type'), FOAF('Person'));
 			if (evs != undefined) {
 				for (var e in evs) {
-					var s = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
+					var storage = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
+					var prfs = g.anyStatementMatching(evs[e]['subject'], SPACE('preferencesFile'))['object']['value'];
+					var fullname = g.anyStatementMatching(evs[e]['subject'], FOAF('name'))['object']['value'];
+					var image = g.anyStatementMatching(evs[e]['subject'], FOAF('img'))['object']['value'];
 					
-					$scope.userProfile.storage = s;
+					$scope.userProfile.storage = storage;
+					$scope.userProfile.preferencesFile = prfs;
+					
+					var split = $scope.userProfile.preferencesFile.split("/");
+				    var prfsDir = "";
+				    for(var i=0; i<split.length-1; i++){
+				    	prfsDir += split[i] + "/";
+				    }
+				    
+				    $scope.userProfile.preferencesDir = prfsDir;
+				    $scope.userProfile.fullname = fullname;
+					$scope.userProfile.image = image;
+				    
 					$scope.saveCredentials();
                     $scope.$apply();
                 }
 			}
 			
             $scope.getEndPoint($scope.userProfile.storage);
-			$scope.isContactsContainer();
+            $scope.getWorkspaces();
+            //$scope.isMetadataExisting();
+	    });  
+    };
+    
+    // Getting contacts storages
+    $scope.getContactsStorages = function (uri) {
+		var g = $rdf.graph();
+	    var f = $rdf.fetcher(g);
+	    
+	    f.nowOrWhenFetched(uri + '*',undefined,function(){	
+		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+			var APP = $rdf.Namespace('https://example.com/');
+			var SPACE = $rdf.Namespace('http://www.w3.org/ns/pim/space#');
+	
+			var evs = g.statementsMatching(undefined, RDF('type'), APP('application'));
+			if (evs != undefined) {
+				for (var e in evs) {
+					var id = evs[e]['subject']['value'];
+					
+					var storages_array = g.statementsMatching(evs[e]['subject'], SPACE('storage'));
+					var storages = [];
+					for (var s in storages_array) {
+						storages.push(storages_array[s]['object']['value']);
+					}
+					
+					var workspaces_array = g.statementsMatching(evs[e]['subject'], SPACE('workspace'));
+					var workspaces = [];
+					for (var w in workspaces_array) {
+						workspaces.push(workspaces_array[w]['object']['value']);
+					}
+					
+					$scope.userProfile.contactStorages = storages;
+					$scope.userProfile.visibleWorkspaces = workspaces;
+					$scope.saveCredentials();
+                    $scope.$apply();
+                }
+			}
+			//fetch user contacts
+			$scope.load();
 	    });
-	    
-	    
     };
     
     // Getting user endpoint
@@ -470,9 +594,111 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           });
     };
     
+    // Check if metadata for contacts app exists, if not create it
+    $scope.isMetadataExisting = function () {
+    	var uri = $scope.userProfile.preferencesDir;
+	    uri += $scope.metadata;
+	    
+        $http({
+          method: 'HEAD',
+          url: uri,
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          //add dir to storage
+          //console.log("Contacts container found");
+          //$scope.path = uri;
+        	$scope.getContactsStorages(uri);       
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            notify('Forbidden', 'Authentication required to create a directory for: '+$scope.user);
+          } else if (status == 403) {
+        	  notify('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
+          } else if (status == 404) {
+        	  //console.log('Contacts container not found...', 'creating it');
+        	  //create default contacts container
+        	  $scope.createMetadata(uri, CREATE, $scope.defaultstorage);
+          } else {
+        	  notify('Failed - HTTP '+status, data, 5000);
+          }
+        });
+    };
+    
+    // Creates contacts metadata
+    $scope.createMetadata = function (uri, action, container) {
+    	var resource = $scope.metadataTemplate(action, container);
+		$http({
+          method: 'PUT', 
+	      url: uri,
+          data: resource,
+          headers: {
+            'Content-Type': 'text/turtle',
+            'Link': '<http://www.w3.org/ns/ldp#Resource>; rel="type"'
+          },
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          if (status == 200 || status == 201) {
+            notify('Success', uri + " updated");
+            $scope.createContainer(action, container);
+          }
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            notify('Forbidden', 'Authentication required to create new directory.');
+          } else if (status == 403) {
+            notify('Forbiddenn', 'You are not allowed to create new directory.');
+          } else {
+            notify('Failed: '+ status + data);
+          }
+        });
+    };
+    
+    // Creates container
+    $scope.createContainer = function (action, container) {
+    	var split = $scope.userProfile.preferencesDir.split("/");
+	    var uri = "";
+    	if(action == CREATE) {
+	    	for(var i=0; i<split.length-2; i++){
+	    		uri += split[i] + "/";
+		    }
+	    	uri += container;
+	    } else {
+	    	uri = container;
+	    }
+	    
+		$http({
+          method: 'PUT', 
+	      url: uri,
+          data: '',
+          headers: {
+            'Content-Type': 'text/turtle',
+			'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"'
+          },
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          if (status == 200 || status == 201) {
+        	  notify('Success', 'Contacts container has been created under ' + container);
+        	  var path = $scope.userProfile.preferencesDir + $scope.metadata;
+        	  $scope.getContactsStorages(path);
+          }
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            notify('Forbidden', 'Authentication required to create new directory.');
+          } else if (status == 403) {
+            notify('Forbiddenn', 'You are not allowed to create new directory.');
+          } else {
+            notify('Failed: '+ status + data);
+          }
+        });
+    };
+    
     // Insert or update a contact resource
     $scope.insertContact = function (contact, operation) {
-	    var uri = $scope.path + $scope.prefix + contact.id;
+	    var uri = contact.workspace + $scope.prefix + contact.id;
         var resource = $scope.composeRDFResource(contact, uri);
         $http({
           method: 'PUT', 
@@ -539,39 +765,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           }
         });
     };
-    
-    // Create contacts container
-    $scope.createContactsContainer = function (str) {
-    	var uri = str.slice(0, str.length-1);
-		$http({
-          method: 'PUT', 
-	      url: uri,
-          data: '',
-          headers: {
-            'Content-Type': 'text/turtle',
-			'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"'
-          },
-          withCredentials: true
-        }).
-        success(function(data, status, headers) {
-          if (status == 200 || status == 201) {
-            notify('Success', 'Your contacts container has been created at '+str);
-            $scope.path = str;
-            //fetch user data
-            $scope.load();
-          }
-        }).
-        error(function(data, status) {
-          if (status == 401) {
-            notify('Forbidden', 'Authentication required to create new directory.');
-          } else if (status == 403) {
-            notify('Forbiddenn', 'You are not allowed to create new directory.');
-          } else {
-            notify('Failed: '+ status + data);
-          }
-        });
-    };
-    
+        
     // Iterate through contacts list and delete
     // contact if found
     $scope.remove = function (contact) {
@@ -605,38 +799,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	
         if ($scope.newcontact.id == contact.id) $scope.newcontact = {};
     };
-       
-    // Check if contacts dir exists, if not create it
-    $scope.isContactsContainer = function () {
-    	var uri = $scope.userProfile.storage + "contacts/";
-        $http({
-          method: 'HEAD',
-          url: uri,
-          withCredentials: true
-        }).
-        success(function(data, status, headers) {
-          //add dir to storage
-          //console.log("Contacts container found");
-          $scope.path = uri;
-          //fetch user data
-          $scope.load();
-       
-        }).
-        error(function(data, status) {
-          if (status == 401) {
-            notify('Forbidden', 'Authentication required to create a directory for: '+$scope.user);
-          } else if (status == 403) {
-        	  notify('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
-          } else if (status == 404) {
-        	  //console.log('Contacts container not found...', 'creating it');
-        	  //create contacts container
-        	  $scope.createContactsContainer(uri);
-          } else {
-        	  notify('Failed - HTTP '+status, data, 5000);
-          }
-        });
-    };
-      
+             
     // Composes an RDF resource to send to the server
     $scope.composeRDFResource = function (contact, uri) {
        var rdf =   "<" + uri + ">\n" +
@@ -647,6 +810,56 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contact.webid + "> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> ;\n" +
        "<http://www.w3.org/2006/vcard/ns#hasKey> \"" + contact.visibility + "\" .\n";
+       return rdf;
+    };
+    
+    // Composes an RDF template to represent app metadata
+    $scope.metadataTemplate = function (action, container) {
+    	var dir = $scope.userProfile.preferencesDir;
+    	var id = dir + $scope.metadata;
+    	
+    	var defaultstorage = "<";
+    	var defaultworkspace = "<";
+    	
+    	if(action == CREATE){
+    		var split = dir.split("/");
+	    	for(var i=0; i<split.length-2; i++){
+	    		defaultstorage += split[i] + "/";
+	    	}
+	    	defaultstorage += "Private/Contacts/>";
+		    
+		    for(var i=0; i<split.length-2; i++){
+	    		defaultworkspace += split[i] + "/";
+		    }
+		    defaultworkspace += "Private/>";
+    	
+    	} else {
+    		var storage_string = "<" + container + ">, ";
+        	for(i in $scope.userProfile.contactStorages) {
+        		storage_string += "<" + $scope.userProfile.contactStorages[i] + ">";
+        		if(i != $scope.userProfile.contactStorages.length-1)
+        			storage_string += ", ";
+     		}
+        	defaultstorage = storage_string;
+        	
+        	var workspace_string = "";
+        	for(i in $scope.userProfile.visibleWorkspaces) {
+        		workspace_string += "<" + $scope.userProfile.visibleWorkspaces[i] + ">";
+        		if(i != $scope.userProfile.visibleWorkspaces.length-1)
+        			workspace_string += ", ";
+     		}
+        	defaultworkspace = workspace_string;
+    	}
+	    
+    	var rdf = "<" + id + ">\n" +
+          		 "a <http://www.w3.org/2000/01/rdf-schema#Resource>, <https://example.com/application> ;\n" +
+          		 "<http://purl.org/dc/elements/1.1/title> \"Contacts\" ;\n" +
+          		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
+          		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
+          		 "<https://example.com/types> <" + $scope.apptypes + "> ;\n" +
+          		 "<http://www.w3.org/ns/pim/space#storage> " + defaultstorage + " ;\n" +
+    			 "<http://www.w3.org/ns/pim/space#workspace> " + defaultworkspace + " .";
+       
        return rdf;
     };
        
@@ -673,8 +886,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           //  $scope.userProfile = {};
           //}
           $scope.userProfile = app.userProfile;
-          $scope.path = $scope.userProfile.storage + "contacts/";
-          $scope.load();
+          $scope.getWorkspaces();
+          $scope.getContactsStorages($scope.userProfile.preferencesDir + $scope.metadata);
           $scope.loggedin = true;
         } else {
           // clear sessionStorage in case there was a change to the data structure
