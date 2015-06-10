@@ -12,16 +12,18 @@
 	       <input name="email" ng-model="newcontact.email" type="text">
 	    <label>Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
+	    <label ng-if="modalTitle == 'New Contact'">Workspace</label>
+	   	   <select class="form-control" ng-model="newcontact.workspace" ng-options="s for s in userProfile.contactStorages" ng-if="modalTitle == 'New Contact'"><option></option></select>
 	    <label></label>
 	    	<input type="radio" name="visibility" ng-model="newcontact.visibility" value="Public"> Public
 	    	<input type="radio" name="visibility" ng-model="newcontact.visibility" value="Private"> Private
-	    	
-	    	<input ng-model="newcontact.id" type="hidden">
+	       
+	       <input ng-model="newcontact.id" type="hidden">
 	</form>
 	</div>
 	<div class="photoView">
 		<label>Photo</label>
-	   	   <input name="name" ng-model="newcontact.photo" type="text">
+	   	   <input name="name" ng-model="newcontact.photo" type="text"> 
 	</div>
 </div>
 <div class="modal-footer">
