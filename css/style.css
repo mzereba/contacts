@@ -290,8 +290,11 @@ table {
 .thumbnail {
 	height: 45px; width: 45px;
 }
-.tooltip{
+.tooltip {
 	line-height: 15px;
 	font-size: 8px;
 	font-weight: normal;
+}
+.bold_placeholder {
+	font-weight: bold;
 }

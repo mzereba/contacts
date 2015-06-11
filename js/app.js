@@ -28,7 +28,6 @@ app.directive('ngFocus', function($timeout) {
 app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
 	$scope.searchedContacts = [];
-	$scope.workspaces = [];
     $scope.modalTitle = '';
     $scope.loggedin = false;
     
@@ -40,6 +39,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.appurl = "http://mzereba.github.io/contacts/";
     $scope.apptypes = "http://www.w3.org/2006/vcard";
     $scope.defaultstorage = "Private/Contacts/";
+    
     var CREATE = 0;
     var UPDATE = 1;
            
@@ -468,11 +468,12 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 				for (var e in evs) {
 					var ws = g.statementsMatching(evs[e]['subject'], SPACE('workspace'));
 					
+					var workspaces = [];
 					for (var s in ws) {
 						var workspace = ws[s]['object']['value'];
-						$scope.workspaces.push(workspace);
+						workspaces.push(workspace);
 					}
-										
+					$scope.userProfile.workspaces = workspaces;					
                     $scope.$apply();
                 }
 			}
@@ -523,7 +524,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 			
             $scope.getEndPoint($scope.userProfile.storage);
             $scope.getWorkspaces();
-            //$scope.isMetadataExisting();
 	    });  
     };
     
@@ -550,13 +550,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					}
 					
 					var workspaces_array = g.statementsMatching(evs[e]['subject'], SPACE('workspace'));
-					var workspaces = [];
+					var enabeled_workspaces = [];
 					for (var w in workspaces_array) {
-						workspaces.push(workspaces_array[w]['object']['value']);
+						enabeled_workspaces.push(workspaces_array[w]['object']['value']);
 					}
 					
 					$scope.userProfile.contactStorages = storages;
-					$scope.userProfile.visibleWorkspaces = workspaces;
+					$scope.userProfile.visibleWorkspaces = enabeled_workspaces;
 					$scope.saveCredentials();
                     $scope.$apply();
                 }
@@ -887,7 +887,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           //}
           $scope.userProfile = app.userProfile;
           $scope.getWorkspaces();
-          $scope.getContactsStorages($scope.userProfile.preferencesDir + $scope.metadata);
           $scope.loggedin = true;
         } else {
           // clear sessionStorage in case there was a change to the data structure

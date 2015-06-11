@@ -18,7 +18,7 @@
 	 		</h4>
 		</label>
 	   		<p>
-	   			<select class="form-control" ng-model="mystorage.workspace" ng-options="w for w in workspaces"><option></option></select>&nbsp;/&nbsp;<input ng-model="mystorage.storagename" ng-focus="isFocused" type="text" placeholder="container name...">
+	   			<select class="form-control" ng-model="mystorage.workspace" ng-options="w for w in userProfile.workspaces"><option></option></select>&nbsp;/&nbsp;<input class="bold_placeholder" ng-model="mystorage.storagename" ng-focus="isFocused" type="text" placeholder="container name...">
 			</p>
 		<button class="btn btn-success" ng-click="createNewStorage(mystorage)">Save</button>
 	</form>
