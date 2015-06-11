@@ -12,10 +12,11 @@
 	       <input name="email" ng-model="newcontact.email" type="text">
 	    <label>Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
-	    <input ng-model="newcontact.id" type="hidden">
-	    <label>Workspace</label>
-	   	   <select class="form-control" ng-model="newcontact.workspace" ng-options="s for s in userProfile.contactStorages"><option></option></select>
+	    <label ng-if="modalTitle == 'Create vCard'">Workspace</label>
+	   	   <select class="form-control" ng-model="newcontact.workspace" ng-options="s for s in userProfile.contactStorages" ng-if="modalTitle == 'Create vCard'"><option></option></select>
 	    <p class="noteTitle" id="note-Title">{{noteTitle}}</p>
+	    
+	       <input ng-model="newcontact.id" type="hidden">
 	</form>
 	</div>
 	<div class="photoView">

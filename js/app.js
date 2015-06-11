@@ -175,9 +175,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.editProfile = function() {
     	$scope.contact = angular.copy($scope.get(0));
-    	if($scope.contact == undefined){
+    	if($scope.contact == undefined) {
    			$scope.addProfile();
-   		}else{
+   		}else {
 	    	$scope.modalTitle = "Edit Me";
 	    	$scope.noteTitle = "";
 	    	$scope.editProfileModal = true;
@@ -200,9 +200,9 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     $scope.viewProfile = function() {
     	$scope.contact = angular.copy($scope.get(0));
-    	if($scope.contact == undefined){
+    	if($scope.contact == undefined) {
    			$scope.addProfile();
-   		}else{
+   		}else {
 	    	$scope.modalTitle = "Me";
 	    	$scope.viewProfileModal = true;
 	    	$scope.viewcontact = angular.copy($scope.get(0));
