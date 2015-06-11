@@ -550,13 +550,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					}
 					
 					var workspaces_array = g.statementsMatching(evs[e]['subject'], SPACE('workspace'));
-					var enabeled_workspaces = [];
+					var enabled_workspaces = [];
 					for (var w in workspaces_array) {
-						enabeled_workspaces.push(workspaces_array[w]['object']['value']);
+						enabled_workspaces.push(workspaces_array[w]['object']['value']);
 					}
 					
 					$scope.userProfile.contactStorages = storages;
-					$scope.userProfile.visibleWorkspaces = enabeled_workspaces;
+					$scope.userProfile.visibleWorkspaces = enabled_workspaces;
 					$scope.saveCredentials();
                     $scope.$apply();
                 }
