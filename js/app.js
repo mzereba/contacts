@@ -340,67 +340,74 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.authenticationModal = false;
     };
     
-    $scope.isVisible = function (storage){
+    $scope.isEnabled = function (storage) {
     	var split = storage.split("/");
 	    var match = "";
-    	for(var i=0; i<split.length-2; i++){
+    	for(var i=0; i<split.length-2; i++) {
     		match += split[i] + "/";
 	    }
     	 return $scope.userProfile.visibleWorkspaces.indexOf(match);
-    }
-           
-    // Listing contact resources
-    $scope.load = function () {
+    };
+    
+    // Loops the load call for each enabled storages
+    $scope.loadEnabled = function() {
     	$scope.contacts.length = 0;
     	for (var i in $scope.userProfile.contactStorages) {
-	    	if($scope.isVisible($scope.userProfile.contactStorages[i]) != -1) {
-	    		var g = $rdf.graph();
-	    		var f = $rdf.fetcher(g);
-    		    f.nowOrWhenFetched($scope.userProfile.contactStorages[i] + '*',undefined,function() {	
-				    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
-					var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-					var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
-					var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
-					
-					var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
-					if (evs != undefined) {
-						for (var e in evs) {
-							var id = evs[e]['subject']['value'];
-							var sId = id.split("_"); 
-							
-							var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
-							
-							var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
-							var sEmail = email.split(":");
-							
-							var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
-							var sPhone = phone.split(":");
-							
-							var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
-							
-							var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
-							
-							var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
-							
-							var contact = {
-							    id: sId[1],
-							    fullname: fullname,
-							    email: sEmail[1],
-							    phone: sPhone[1],
-								webid: uid,
-								photo: pic,
-								visibility: key
-							};
-							$scope.contacts.push(contact);
-		                    $scope.$apply();
-		                }
-						$scope.contacts.sort(function(a, b){
-							 return a.id-b.id
-						})
-					}
-			    });
+	    	if($scope.isEnabled($scope.userProfile.contactStorages[i]) != -1) {
+	    		$scope.load($scope.userProfile.contactStorages[i]);
 	    	}
-	    }
+    	}
+    	
+    	$scope.contacts.sort(function(a, b) {
+			 return a.id-b.id
+		})
+    };
+    
+    // Listing contact resources
+    $scope.load = function (uri) {
+		var g = $rdf.graph();
+		var f = $rdf.fetcher(g);
+	    f.nowOrWhenFetched(uri + '*',undefined,function() {	
+		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
+			var VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+			
+			var evs = g.statementsMatching(undefined, RDF('type'), VCARD('Individual'));
+			if (evs != undefined) {
+				for (var e in evs) {
+					var id = evs[e]['subject']['value'];
+					var sId = id.split("_"); 
+					
+					var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+					
+					var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
+					var sEmail = email.split(":");
+					
+					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
+					var sPhone = phone.split(":");
+					
+					var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
+					
+					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+					
+					var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
+					
+					var contact = {
+					    id: sId[1],
+					    fullname: fullname,
+					    email: sEmail[1],
+					    phone: sPhone[1],
+						webid: uid,
+						photo: pic,
+						visibility: key
+					};
+					$scope.contacts.push(contact);
+                    $scope.$apply();
+                }
+				
+			}
+	    });
     };
     
     //Listing contact resources from response
@@ -561,7 +568,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                 }
 			}
 			//fetch user contacts
-			$scope.load();
+			$scope.loadEnabled();
 	    });
     };
     
