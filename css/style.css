@@ -298,3 +298,6 @@ table {
 .bold_placeholder {
 	font-weight: bold;
 }
+p.big-weight {
+  font-size: 32px;
+}
