@@ -351,13 +351,12 @@ app.controller('ContactController', function ($scope, $http, $sce) {
            
     // Listing contact resources
     $scope.load = function () {
-		var g = $rdf.graph();
-	    var f = $rdf.fetcher(g);
-	    $scope.contacts.length = 0;
-	    
-	    for (var i in $scope.userProfile.contactStorages) {
+    	$scope.contacts.length = 0;
+    	for (var i in $scope.userProfile.contactStorages) {
 	    	if($scope.isVisible($scope.userProfile.contactStorages[i]) != -1) {
-			    f.nowOrWhenFetched($scope.userProfile.contactStorages[i] + '*',undefined,function(){	
+	    		var g = $rdf.graph();
+	    		var f = $rdf.fetcher(g);
+    		    f.nowOrWhenFetched($scope.userProfile.contactStorages[i] + '*',undefined,function() {	
 				    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
 					var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 					var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
