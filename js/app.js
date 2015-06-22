@@ -212,7 +212,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.myStorage = function() {
     	$scope.modalTitle = "My Storage";
     	$scope.myStorageModal = true;
-    	$scope.mystorage = {}
+    	$scope.mystorage = {};
+    	$scope.mystorage.workspace = $scope.userProfile.workspaces[0];
     	$scope.isFocused = true;
     };
     
@@ -353,6 +354,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.loadEnabled = function() {
     	$scope.contacts.length = 0;
     	for (var i in $scope.userProfile.contactStorages) {
+    		console.log("loadEnabled: " + $scope.userProfile.contactStorages[i]);
 	    	if($scope.isEnabled($scope.userProfile.contactStorages[i]) != -1) {
 	    		$scope.load($scope.userProfile.contactStorages[i]);
 	    	}
@@ -360,14 +362,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	
     	$scope.contacts.sort(function(a, b) {
 			 return a.id-b.id
-		})
+		});
     };
     
     // Listing contact resources
     $scope.load = function (uri) {
 		var g = $rdf.graph();
 		var f = $rdf.fetcher(g);
-	    f.nowOrWhenFetched(uri + '*',undefined,function() {	
+	    f.nowOrWhenFetched(uri + '*',undefined,function() {
+	    	console.log("load: " + uri);
 		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
 			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 			var LDP = $rdf.Namespace('http://www.w3.org/ns/ldp#');
@@ -392,7 +395,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
 					
 					var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
-					
+															
 					var contact = {
 					    id: sId[1],
 					    fullname: fullname,
@@ -400,18 +403,19 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					    phone: sPhone[1],
 						webid: uid,
 						photo: pic,
-						visibility: key
+						visibility: key,
+						workspace: uri
 					};
 					$scope.contacts.push(contact);
                     $scope.$apply();
                 }
 				
 			}
-	    });
+	    });  
     };
     
     //Listing contact resources from response
-    $scope.loadSearched = function (data){
+    $scope.loadSearched = function (data) {
     	var g = $rdf.graph();
   	  	var p = $rdf.N3Parser(g, g, "http://crosscloud.qcri.org/LDM/server/RDF/query", "http://crosscloud.qcri.org/LDM/server/RDF/query", null, null, "", null);
   	  	p.loadBuf(data);
@@ -479,8 +483,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 						var workspace = ws[s]['object']['value'];
 						workspaces.push(workspace);
 					}
-					$scope.userProfile.workspaces = workspaces;					
-                    $scope.$apply();
+					$scope.userProfile.workspaces = workspaces;
+                    //$scope.$apply();
                 }
 			}
 			
@@ -533,7 +537,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 	    });  
     };
     
-    // Getting contacts storages
+    // Gets contacts storages
     $scope.getContactsStorages = function (uri) {
 		var g = $rdf.graph();
 	    var f = $rdf.fetcher(g);
@@ -775,7 +779,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     // Iterate through contacts list and delete
     // contact if found
     $scope.remove = function (contact) {
-        var uri = $scope.path + $scope.prefix + contact.id;
+        var uri = contact.workspace + $scope.prefix + contact.id;
     	$http({
     	      method: 'DELETE',
     	      url: uri,
