@@ -1,6 +1,6 @@
 /**
  * Jan 21, 2015
- * script.js 
+ * app.js 
  * @author mzereba
  */
 
@@ -28,14 +28,17 @@ app.directive('ngFocus', function($timeout) {
 app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.contacts = [];
 	$scope.searchedContacts = [];
-    $scope.modalTitle = '';
-    $scope.loggedin = false;
     
+    $scope.loggedin = false;
     $scope.userProfile = {};
+    
+    $scope.modalTitle = '';
     $scope.endpoint = '';	
-    $scope.path = '';	
+    
     $scope.prefix = "vcard_";
+    
     $scope.metadata = "app-contacts.metadata";
+    $scope.widget = "contacts.widget";
     $scope.appurl = "http://mzereba.github.io/contacts/";
     $scope.apptypes = "http://www.w3.org/2006/vcard";
     $scope.defaultstorage = "Private/Contacts/";
@@ -137,7 +140,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.replace = function (contact) {
         for (i in $scope.contacts) {
             if ($scope.contacts[i].id == contact.id) {
-                $scope.contacts[i] = contact;
+                $scope.contacts[i] = angular.copy(contact);
             }
         }
     };
@@ -272,7 +275,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     $scope.createNewStorage = function(mystorage) {
-    	
     	var storage = mystorage.workspace + mystorage.storagename + "/";
     	var workspace = mystorage.workspace;
     	var uri = $scope.userProfile.preferencesDir+$scope.metadata;
@@ -615,9 +617,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           withCredentials: true
         }).
         success(function(data, status, headers) {
-          //add dir to storage
-          //console.log("Contacts container found");
-          //$scope.path = uri;
+        	//container found, load metadata
         	$scope.getContactsStorages(uri);       
         }).
         error(function(data, status) {
@@ -709,7 +709,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     // Insert or update a contact resource
     $scope.insertContact = function (contact, operation) {
 	    var uri = contact.workspace + $scope.prefix + contact.id;
-        var resource = $scope.composeRDFResource(contact, uri);
+        var resource = $scope.vCardTemplate(contact, uri);
         $http({
           method: 'PUT', 
           url: uri,
@@ -732,6 +732,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	    	$scope.replace(contact);
           	}
             $scope.newcontact = {};
+            //update the widget file
+	    	$scope.updateWidget($scope.contacts);
           }
         }).
         error(function(data, status) {
@@ -793,6 +795,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	    	if (indexOf !== -1) {
     	    		$scope.contacts.splice(indexOf, 1);
     	    	}
+    	    	//update the widget file
+    	    	$scope.updateWidget($scope.contacts);
     	      }
     	    }).
     	    error(function(data, status) {
@@ -809,21 +813,64 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	
         if ($scope.newcontact.id == contact.id) $scope.newcontact = {};
     };
+    
+    // Insert or update the contacts widget resource
+    $scope.updateWidget = function (contacts) {
+	    var uri = $scope.userProfile.preferencesDir + $scope.widget;
+        var resource = $scope.widgetTemplate(contacts);
+        $http({
+          method: 'PUT', 
+          url: uri,
+          data: resource,
+          headers: {
+            'Content-Type': 'text/turtle',
+            'Link': '<http://www.w3.org/ns/ldp#Resource>; rel="type"'
+          },
+          withCredentials: true
+        }).
+        success(function(data, status, headers) {
+          if (status == 200 || status == 201) {} 
+          else {}
+        }).
+        error(function(data, status) {
+          if (status == 401) {
+            notify('Forbidden', 'Authentication required to create new resource.');
+          } else if (status == 403) {
+            notify('Forbidden', 'You are not allowed to create new resource.');
+          } else {
+            notify('Failed '+ status + data);
+          }
+        });
+    };
              
-    // Composes an RDF resource to send to the server
-    $scope.composeRDFResource = function (contact, uri) {
+    // Composes a vCard as RDF resource
+    $scope.vCardTemplate = function (contact, uri) {
        var rdf =   "<" + uri + ">\n" +
-          "a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
+          "a <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#fn> \"" + contact.fullname + "\" ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasEmail> <mailto:" + contact.email + "> ;\n" + 
           "<http://www.w3.org/2006/vcard/ns#hasTelephone> <tel:" + contact.phone + "> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contact.webid + "> ;\n" +
           "<http://www.w3.org/2006/vcard/ns#hasPhoto> <" + contact.photo + "> ;\n" +
-       "<http://www.w3.org/2006/vcard/ns#hasKey> \"" + contact.visibility + "\" .\n";
+          "<http://www.w3.org/2006/vcard/ns#hasKey> \"" + contact.visibility + "\" .\n";
        return rdf;
     };
     
-    // Composes an RDF template to represent app metadata
+    // Composes a lighter version of contacts list as RDF resource listing, to be used by the widget
+    $scope.widgetTemplate = function (contacts) {
+    	var rdf = "";
+    	for (i in contacts) {
+	    	var id = contacts[i].workspace + $scope.prefix + contacts[i].id;
+	    	rdf +=   "<" + id + ">\n" +
+	          "a <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
+	          "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contacts[i].webid + "> ;\n" +
+	          "<http://www.w3.org/2006/vcard/ns#fn> \"" + contacts[i].fullname + "\" ;\n" +
+	          "<https://example.com/workspace> \"" + contacts[i].workspace + "\" .\n\n" ;
+    	}
+    	return rdf;
+    };
+    
+    // Composes the app metadata as RDF resource
     $scope.metadataTemplate = function (action, container) {
     	var dir = $scope.userProfile.preferencesDir;
     	var id = dir + $scope.metadata;
@@ -862,7 +909,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	}
 	    
     	var rdf = "<" + id + ">\n" +
-          		 "a <http://www.w3.org/2000/01/rdf-schema#Resource>, <https://example.com/application> ;\n" +
+          		 "a <https://example.com/application> ;\n" +
           		 "<http://purl.org/dc/elements/1.1/title> \"Contacts\" ;\n" +
           		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
           		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
