@@ -4,15 +4,15 @@
 <div class="modal-body">
 	<div class="infoView">
 	<form>
-	    <label>WebID</label>
+	    <label><i class="fa fa-globe"></i>&nbsp;&nbsp;WebID</label>
 	       <input name="name" ng-model="newcontact.webid" ng-focus="isFocused" type="text">
-	    <label>Name</label>
+	    <label><i class="fa fa-user"></i>&nbsp;&nbsp;Name</label>
 	       <input name="name" ng-model="newcontact.fullname" type="text">
-	    <label>Email</label>
+	    <label><i class="fa fa-envelope"></i>&nbsp;&nbsp;Email</label>
 	       <input name="email" ng-model="newcontact.email" type="text">
-	    <label>Phone</label>
+	    <label><i class="fa fa-phone"></i>&nbsp;&nbsp;Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
-	    <label ng-if="modalTitle == 'Create vCard'">Workspace</label>
+	    <label ng-if="modalTitle == 'Create vCard'"><i class="fa fa-folder-open"></i>&nbsp;&nbsp;Workspace</label>
 	   	   <select class="form-control" ng-model="newcontact.workspace" ng-init="newcontact.workspace = userProfile.contactStorages[0]" ng-options="s for s in userProfile.contactStorages" ng-if="modalTitle == 'Create vCard'"></select>
 	    <p class="noteTitle" id="note-Title">{{noteTitle}}</p>
 	    
@@ -20,7 +20,7 @@
 	</form>
 	</div>
 	<div class="photoView">
-		<label>Photo</label>
+		<label><i class="fa fa-picture-o"></i>&nbsp;&nbsp;Photo</label>
 	   	   <input name="name" ng-model="newcontact.photo" type="text">
 	</div>
 </div>

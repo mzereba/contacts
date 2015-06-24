@@ -5,17 +5,13 @@
 	<div class="infoView">
 	<form>
 		<label class="spacedBottom">
-			<h4>
   			<i class="fa fa-database"></i>&nbsp;
-  			My Storage
- 			</h4>
+  			Storage
  		</label>
 	       <p type="text" ng-repeat="s in userProfile.contactStorages">{{s}}</p>
 	    <label class="spacedTop spacedBottom">
-			<h4>
 	  			<i class="fa fa-plus"></i>&nbsp;
 	  			Add new storage
-	 		</h4>
 		</label>
 	   		<p class="big-weight">
 	   			<select class="form-control" ng-model="mystorage.workspace" ng-options="ws for ws in userProfile.workspaces"></select>&nbsp;/&nbsp;<input class="bold_placeholder" ng-model="mystorage.storagename" ng-focus="isFocused" type="text" placeholder="container name...">
