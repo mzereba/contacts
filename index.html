@@ -32,13 +32,13 @@
 			</div>
 			<div class="btn-group dropdownblock" dropdown is-open="status.isopen">
 				<button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!loggedin" tooltip="Me" tooltip-placement="bottom">
-					<i class="fa fa-user fa-2x"></i> 
+					<i class="fa fa-cog fa-2x"></i> 
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
-					<li><a href="#" ng-click="viewProfile()">View Me</a></li>
-				  	<li><a href="#" ng-click="editProfile()">Edit Me</a></li>
-				  	<li><a href="#" ng-click="myStorage()">My Storage</a></li>
+					<li><a href="#" ng-click="viewProfile()"><i class="fa fa-user"></i>&nbsp;View Me</a></li>
+				  	<li><a href="#" ng-click="editProfile()"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit Me</a></li>
+				  	<li><a href="#" ng-click="myStorage()"><i class="fa fa-database"></i>&nbsp;My Storage</a></li>
 				</ul>
 			</div>
 			<input class="block" type="search" ng-model="q" placeholder="filter contacts..." ng-disabled="!loggedin" />
