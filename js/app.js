@@ -464,30 +464,30 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     };
     
     // Gets workspaces
-    $scope.getWorkspaces = function () {
+    $scope.getWorkspaces = function (uri) {
 		var g = $rdf.graph();
 	    var f = $rdf.fetcher(g);
-	    var uri = $scope.userProfile.preferencesFile;
-	    
-	    f.nowOrWhenFetched(uri + '*',undefined,function(){	
+        console.log('getWorkspaces',uri);
+	    f.nowOrWhenFetched(uri,undefined,function(){	
 		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
 			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-			var TYPE = $rdf.Namespace('https://example.com/');
 			var SPACE = $rdf.Namespace('http://www.w3.org/ns/pim/space#');
 	
-			var evs = g.statementsMatching(undefined, RDF('type'), TYPE('prefs'));
-			if (evs != undefined) {
+			var evs = g.statementsMatching($rdf.sym($scope.userProfile.webid), SPACE('preferencesFile'), $rdf.sym(uri));
+            console.log(evs);
+			if (evs.length > 0) {
+                var workspaces = [];
 				for (var e in evs) {
 					var ws = g.statementsMatching(evs[e]['subject'], SPACE('workspace'));
 					
-					var workspaces = [];
 					for (var s in ws) {
 						var workspace = ws[s]['object']['value'];
 						workspaces.push(workspace);
 					}
-					$scope.userProfile.workspaces = workspaces;
                     //$scope.$apply();
                 }
+                $scope.userProfile.workspaces = workspaces;
+                console.log($scope.userProfile.workspaces);
 			}
 			
 			$scope.isMetadataExisting();
@@ -508,24 +508,30 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 			var SPACE = $rdf.Namespace('http://www.w3.org/ns/pim/space#');
 			var FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 	
-			var evs = g.statementsMatching(undefined, RDF('type'), FOAF('Person'));
-			if (evs != undefined) {
+			var evs = g.statementsMatching($rdf.sym($scope.userProfile.webid), RDF('type'), FOAF('Person'));
+			if (evs.length > 0) {
 				for (var e in evs) {
 					var storage = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
 					var prfs = g.anyStatementMatching(evs[e]['subject'], SPACE('preferencesFile'))['object']['value'];
 					var fullname = g.anyStatementMatching(evs[e]['subject'], FOAF('name'))['object']['value'];
 					var image = g.anyStatementMatching(evs[e]['subject'], FOAF('img'))['object']['value'];
 					
+                    console.log('getStorage',prfs);
+
 					$scope.userProfile.storage = storage;
-					$scope.userProfile.preferencesFile = prfs;
-					
-					var split = $scope.userProfile.preferencesFile.split("/");
-				    var prfsDir = "";
-				    for(var i=0; i<split.length-1; i++){
-				    	prfsDir += split[i] + "/";
-				    }
-				    
-				    $scope.userProfile.preferencesDir = prfsDir;
+                    if (prfs && prfs.length > 0) {
+                        $scope.userProfile.preferencesFile = prfs;
+                        $scope.getWorkspaces(prfs);
+
+                        var split = $scope.userProfile.preferencesFile.split("/");
+                        var prfsDir = "";
+                        for(var i=0; i<split.length-1; i++){
+                            prfsDir += split[i] + "/";
+                        }
+                        
+                        $scope.userProfile.preferencesDir = prfsDir;
+                    } 
+
 				    $scope.userProfile.fullname = fullname;
 					$scope.userProfile.image = image;
 				    
@@ -535,7 +541,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 			}
 			
             $scope.getEndPoint($scope.userProfile.storage);
-            $scope.getWorkspaces();
 	    });  
     };
     
@@ -943,7 +948,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
           //  $scope.userProfile = {};
           //}
           $scope.userProfile = app.userProfile;
-          $scope.getWorkspaces();
+          $scope.getWorkspaces($scope.userProfile.preferencesFile);
           $scope.loggedin = true;
         } else {
           // clear sessionStorage in case there was a change to the data structure
