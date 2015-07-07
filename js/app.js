@@ -41,7 +41,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.index = "contacts-index";
     $scope.appurl = "http://mzereba.github.io/contacts/";
     $scope.apptypes = "http://www.w3.org/2006/vcard";
-    $scope.defaultstorage = "Private/Contacts/";
     
     var CREATE = 0;
     var UPDATE = 1;
@@ -285,8 +284,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.createStorage = function(storage) {
 		$scope.noteTitle = "";
 		var uri = $scope.userProfile.preferencesDir+$scope.metadata;
-		$scope.createMetadata(uri, UPDATE, storage);
-		$scope.mystorage = {};
+		$scope.createOrUpdateMetadata(uri, UPDATE, storage);
+		$scope.mystorage.storagename = "";
     };
     
     $scope.import = function(contact, input) {
@@ -359,19 +358,23 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	 return $scope.userProfile.enabledWorkspaces.indexOf(match);
     };
     
-    // Loops the load call for each enabled storages
+    // Loops the load call for each enabled workspace
     $scope.loadEnabled = function() {
     	$scope.contacts.length = 0;
-    	for (var i in $scope.userProfile.contactStorages) {
-    		console.log("loadEnabled: " + $scope.userProfile.contactStorages[i]);
-	    	if($scope.isEnabled($scope.userProfile.contactStorages[i]) != -1) {
-	    		$scope.load($scope.userProfile.contactStorages[i]);
+    	if($scope.userProfile.contactStorages == 0) {
+    		$scope.myStorage();
+    	} else {
+	    	for (var i in $scope.userProfile.contactStorages) {
+	    		console.log("loadEnabled: " + $scope.userProfile.contactStorages[i]);
+		    	if($scope.isEnabled($scope.userProfile.contactStorages[i]) != -1) {
+		    		$scope.load($scope.userProfile.contactStorages[i]);
+		    	}
 	    	}
+	    	
+	    	$scope.contacts.sort(function(a, b) {
+				 return a.id-b.id
+			});
     	}
-    	
-    	$scope.contacts.sort(function(a, b) {
-			 return a.id-b.id
-		});
     };
     
     // Listing contact resources
@@ -586,6 +589,35 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 	    });
     };
     
+    // Gets contacts basics
+    $scope.getBasicMetadata = function (uri) {
+		var g = $rdf.graph();
+	    var f = $rdf.fetcher(g);
+	    
+	    f.nowOrWhenFetched(uri + '*',undefined,function(){	
+		    var DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+			var RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+			var APP = $rdf.Namespace('https://example.com/');
+			var SPACE = $rdf.Namespace('http://www.w3.org/ns/pim/space#');
+	
+			var evs = g.statementsMatching(undefined, RDF('type'), APP('application'));
+			if (evs != undefined) {
+				for (var e in evs) {
+					var id = evs[e]['subject']['value'];
+					var index = g.anyStatementMatching(evs[e]['subject'], APP('index'))['object']['value'];
+										
+					$scope.userProfile.index = index;
+					$scope.userProfile.contactStorages = [];
+					$scope.userProfile.enabledWorkspaces = [];
+					$scope.saveCredentials();
+                    $scope.$apply();
+                }
+			}
+			//fetch user contacts
+			$scope.loadEnabled();
+	    });
+    };
+    
     // Getting user endpoint
     $scope.getEndPoint = function (storage) {
 		var aDomain = storage.split("/");
@@ -661,15 +693,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         	  notify('Forbidden', 'You are not allowed to access storage for: '+$scope.user);
           } else if (status == 404) {
         	  //create default contacts container
-        	  $scope.createMetadata(uri, CREATE, $scope.defaultstorage);
+        	  $scope.createOrUpdateMetadata(uri, CREATE, "");
           } else {
         	  notify('Failed - HTTP '+status, data, 5000);
           }
         });
     };
     
-    // Creates contacts metadata
-    $scope.createMetadata = function (uri, action, container) {
+    // Creates or updates contacts metadata
+    $scope.createOrUpdateMetadata = function (uri, action, container) {
     	var resource = $scope.metadataTemplate(action, container);
 		$http({
           method: 'PUT', 
@@ -683,8 +715,14 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
           if (status == 200 || status == 201) {
-            notify('Success', uri + " updated");
-            $scope.createContainer(action, container);
+            if(action == CREATE){
+            	notify('Success', uri + " created");
+            	var path = $scope.userProfile.preferencesDir + $scope.metadata;
+          	  	$scope.getStorage(path);
+            } else {
+            	notify('Success', uri + " updated");
+            	$scope.createContainer(action, container);
+            }
           }
         }).
         error(function(data, status) {
@@ -700,16 +738,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     // Creates container
     $scope.createContainer = function (action, container) {
-    	var split = $scope.userProfile.preferencesDir.split("/");
-	    var uri = "";
-    	if(action == CREATE) {
-	    	for(var i=0; i<split.length-2; i++){
-	    		uri += split[i] + "/";
-		    }
-	    	uri += container;
-	    } else {
-	    	uri = container;
-	    }
+    	var uri = container;
 	    
 		$http({
           method: 'PUT', 
@@ -905,52 +934,59 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     // Composes the app metadata as RDF resource
     $scope.metadataTemplate = function (action, container) {
     	var dir = $scope.userProfile.preferencesDir;
-    	var id = dir + $scope.metadata;
-    	
-    	var defaultstorage = "<";
-    	var defaultworkspace = "<";
+    	var id = dir + $scope.metadata;    	
+    	var rdf = "";
     	
     	if(action == CREATE){
-    		var split = dir.split("/");
-	    	for(var i=0; i<split.length-2; i++){
-	    		defaultstorage += split[i] + "/";
-	    	}
-	    	defaultstorage += "Private/Contacts/>";
-		    
-		    for(var i=0; i<split.length-2; i++){
-	    		defaultworkspace += split[i] + "/";
-		    }
-		    defaultworkspace += "Private/>";
+		    rdf = "<" + id + ">\n" +
+     		 "a <https://example.com/application> ;\n" +
+     		 "<http://purl.org/dc/elements/1.1/title> \"Contacts\" ;\n" +
+     		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
+     		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
+     		 "<https://example.com/index> <" + $scope.userProfile.preferencesDir + $scope.index + "> ;\n" +
+     		 "<https://example.com/types> <" + $scope.apptypes + "> ." ;
     	
     	} else {
-    		var storage_string = "<" + container + ">, ";
-        	for(i in $scope.userProfile.contactStorages) {
-        		storage_string += "<" + $scope.userProfile.contactStorages[i] + ">";
-        		if(i != $scope.userProfile.contactStorages.length-1)
-        			storage_string += ", ";
-     		}
+    		var defaultstorage = "";
+        	var defaultworkspace = "";
+        	
+    		var storage_string = "<" + container + "> ";
+        	if($scope.userProfile.contactStorages.length > 0) {
+	    		for(i in $scope.userProfile.contactStorages) {
+	        		storage_string += ", <" + $scope.userProfile.contactStorages[i] + ">";
+	     		}
+        	} 
         	defaultstorage = storage_string;
         	
         	var workspace_string = "";
-        	for(i in $scope.userProfile.enabledWorkspaces) {
-        		workspace_string += "<" + $scope.userProfile.enabledWorkspaces[i] + ">";
-        		if(i != $scope.userProfile.enabledWorkspaces.length-1)
-        			workspace_string += ", ";
-     		}
+        	if($scope.userProfile.contactStorages.length == 0) {
+        		 var split = container.split("/");
+                 var workspace = "";
+                 for(var i=0; i<split.length-2; i++){
+                	 workspace += split[i] + "/";
+                 }
+                 workspace_string += "<" + workspace + ">";
+        	} else {
+	        	for(i in $scope.userProfile.enabledWorkspaces) {
+	        		workspace_string += "<" + $scope.userProfile.enabledWorkspaces[i] + ">";
+	        		if(i != $scope.userProfile.enabledWorkspaces.length-1)
+	        			workspace_string += ", ";
+	     		}
+        	}
         	defaultworkspace = workspace_string;
+        	
+        	rdf = "<" + id + ">\n" +
+     		 "a <https://example.com/application> ;\n" +
+     		 "<http://purl.org/dc/elements/1.1/title> \"Contacts\" ;\n" +
+     		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
+     		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
+     		 "<https://example.com/index> <" + $scope.userProfile.preferencesDir + $scope.index + "> ;\n" +
+     		 "<https://example.com/types> <" + $scope.apptypes + "> ;\n" +
+     		 "<http://www.w3.org/ns/pim/space#storage> " + defaultstorage + " ;\n" +
+			 "<http://www.w3.org/ns/pim/space#workspace> " + defaultworkspace + " .";
     	}
-	    
-    	var rdf = "<" + id + ">\n" +
-          		 "a <https://example.com/application> ;\n" +
-          		 "<http://purl.org/dc/elements/1.1/title> \"Contacts\" ;\n" +
-          		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
-          		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
-          		 "<https://example.com/index> <" + $scope.userProfile.preferencesDir + $scope.index + "> ;\n" +
-          		 "<https://example.com/types> <" + $scope.apptypes + "> ;\n" +
-          		 "<http://www.w3.org/ns/pim/space#storage> " + defaultstorage + " ;\n" +
-    			 "<http://www.w3.org/ns/pim/space#workspace> " + defaultworkspace + " .";
-       
-       return rdf;
+	         
+    	return rdf;
     };
        
     // Listen to WebIDAuth events

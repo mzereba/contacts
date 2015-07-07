@@ -8,6 +8,7 @@
   			<i class="fa fa-database"></i>&nbsp;
   			Storage
  		</label>
+ 		   <p type="text" ng-if="userProfile.contactStorages.length == 0"></p>
 	       <p type="text" ng-repeat="s in userProfile.contactStorages">{{s}}</p>
 	    <label class="spacedTop spacedBottom">
 	  			<i class="fa fa-plus"></i>&nbsp;
