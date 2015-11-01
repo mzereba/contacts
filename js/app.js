@@ -40,7 +40,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.metadata = "app-contacts";
     $scope.index = "contacts-index";
     $scope.appurl = "http://mzereba.github.io/contacts/";
-    $scope.apptypes = "http://www.w3.org/2006/vcard";
+    $scope.apptypes = ["http://www.w3.org/2006/vcard"];
     
     var CREATE = 0;
     var UPDATE = 1;
@@ -937,6 +937,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	var id = dir + $scope.metadata;    	
     	var rdf = "";
     	
+    	var sTypes = "";
+	    if($scope.apptypes.length > 0) {
+    		for(i in $scope.apptypes) {
+    			sTypes += "<" + $scope.apptypes[i] + ">";
+    			if(i != $scope.apptypes.length-1)
+    				sTypes += ", ";	    				
+     		}
+    	}
+    	
     	if(action == CREATE){
 		    rdf = "<" + id + ">\n" +
      		 "a <https://example.com/application> ;\n" +
@@ -944,7 +953,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
      		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
      		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
      		 "<https://example.com/index> <" + $scope.userProfile.preferencesDir + $scope.index + "> ;\n" +
-     		 "<https://example.com/types> <" + $scope.apptypes + "> ." ;
+     		 "<https://example.com/types> " + sTypes + " ." ;
     	
     	} else {
     		var defaultstorage = "";
