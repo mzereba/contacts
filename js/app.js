@@ -990,7 +990,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
      		 "<https://example.com/app-url> <" + $scope.appurl + "> ;\n" + 
      		 "<https://example.com/logo> <" + $scope.appurl + "images/contacts.gif" + "> ;\n" +
      		 "<https://example.com/index> <" + $scope.userProfile.preferencesDir + $scope.index + "> ;\n" +
-     		 "<https://example.com/types> <" + $scope.apptypes + "> ;\n" +
+     		 "<https://example.com/types> " + sTypes + " ;\n" +
      		 "<http://www.w3.org/ns/pim/space#storage> " + defaultstorage + " ;\n" +
 			 "<http://www.w3.org/ns/pim/space#workspace> " + defaultworkspace + " .";
     	}
