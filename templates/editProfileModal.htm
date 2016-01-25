@@ -12,7 +12,7 @@
 	       <input name="email" ng-model="newcontact.email" type="text">
 	    <label><i class="fa fa-phone"></i>&nbsp;&nbsp;Phone</label>
 	       <input name="phone" ng-model="newcontact.phone" type="text">
-	    <label ng-if="modalTitle == 'Create vCard'"><i class="fa fa-folder-open"></i>&nbsp;&nbsp;Workspace</label>
+	    <label ng-if="modalTitle == 'Create vCard'"><i class="fa fa-folder-open"></i>&nbsp;&nbsp;Storage</label>
 	   	   <select class="form-control" ng-model="newcontact.workspace" ng-options="s for s in userProfile.contactStorages" ng-if="modalTitle == 'Create vCard'"></select>
 	    <p class="noteTitle" id="note-Title">{{noteTitle}}</p>
 	    
