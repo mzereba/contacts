@@ -27,7 +27,7 @@ body {
 	/*padding-bottom: 10px;*/
 	/*border-bottom: solid 1px #AAAAAA;*/
 	padding-left: 10px;
-	background: none repeat scroll 0 0 #000000;
+	background: none repeat scroll 0 0 #72ce9b;
 	color: #ffffff;
 	height: 65px;
 	line-height: 65px;
@@ -153,19 +153,20 @@ table {
 }
 
 .bordered th {
-	background-color: #72ce9b;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#72ce9b),
-		to(#72ce9b) );
-	background-image: -webkit-linear-gradient(top, #72ce9b, #72ce9b);
+	background-color: #000000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#000000),
+		to(#000000) );
+	background-image: -webkit-linear-gradient(top, #000000, #000000);
 	/*background-image:    -moz-linear-gradient(top, #D0D0D0, #D0D0D0);*/
-	background-image: -ms-linear-gradient(top, #72ce9b, #72ce9b);
-	background-image: -o-linear-gradient(top, #72ce9b, #72ce9b);
-	background-image: linear-gradient(top, #72ce9b, #72ce9b);
+	background-image: -ms-linear-gradient(top, #000000, #000000);
+	background-image: -o-linear-gradient(top, #000000, #000000);
+	background-image: linear-gradient(top, #000000, #000000);
 	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset;
 	-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset;
 	/*box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; */
 	border-top: none;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+	color: #ffffff;
 }
 
 .bordered td:first-child,.bordered th:first-child {
