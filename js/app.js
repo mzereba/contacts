@@ -537,7 +537,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                     } 
 
 				    $scope.userProfile.fullname = fullname;
-					$scope.userProfile.image = image;
+					//$scope.userProfile.image = image;
 				    
 					$scope.saveCredentials();
                     $scope.$apply();
