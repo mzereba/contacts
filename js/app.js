@@ -520,7 +520,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					var storage = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
 					var prfs = g.anyStatementMatching(evs[e]['subject'], SPACE('preferencesFile'))['object']['value'];
 					var fullname = g.anyStatementMatching(evs[e]['subject'], FOAF('name'))['object']['value'];
-					//var image = g.anyStatementMatching(evs[e]['subject'], FOAF('img'))['object']['value'];
+					var image = g.anyStatementMatching(evs[e]['subject'], FOAF('img'))['object']['value'];
 
 					$scope.userProfile.storage = storage;
                     if (prfs && prfs.length > 0) {
@@ -537,7 +537,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                     } 
 
 				    $scope.userProfile.fullname = fullname;
-					//$scope.userProfile.image = image;
+					$scope.userProfile.image = image;
 				    
 					$scope.saveCredentials();
                     $scope.$apply();
