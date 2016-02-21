@@ -30,6 +30,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.searchedContacts = [];
     
     $scope.loggedin = false;
+    $scope.useStorage = false;
     $scope.userProfile = {};
     
     $scope.modalTitle = '';
@@ -44,6 +45,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     var CREATE = 0;
     var UPDATE = 1;
+    var USEEXISTING = 2;
            
     var queryTemplate = "construct { \n" +
 						"?VCard a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ; \n" +
@@ -288,6 +290,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 		$scope.mystorage.storagename = "";
     };
     
+    $scope.useExistingStorage = function(mystorage) {
+		$scope.noteTitle = "";
+		$scope.useStorage = false;
+		var uri = $scope.userProfile.preferencesDir+$scope.metadata;
+		var storage = mystorage.workspace + mystorage.storagename + "/";
+		$scope.createOrUpdateMetadata(uri, USEEXISTING, storage);
+		$scope.mystorage.storagename = "";
+    };
+    
     $scope.import = function(contact, input) {
         //if this is new contact, add it in contacts array
 		//generate unique id
@@ -519,7 +530,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 				for (var e in evs) {
 					var storage = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
 					var prfs = g.anyStatementMatching(evs[e]['subject'], SPACE('preferencesFile'))['object']['value'];
-					var fullname = g.anyStatementMatching(evs[e]['subject'], FOAF('name'))['object']['value'];
+					
+					var fullnamePredicate = g.anyStatementMatching(evs[e]['subject'], FOAF('name'));
+					var fullname = "";
+					if(fullnamePredicate != null)
+						fullname = fullnamePredicate ['object']['value'];
+					else
+						fullname = $scope.userProfile.webid;
 					
 					var imagePredicate = g.anyStatementMatching(evs[e]['subject'], FOAF('img'));
 					var image = "";
@@ -661,7 +678,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
         	//container found, warn user to create a different one
-        	$scope.noteTitle = "Warning: name already existing in the selected workspace!";
+        	$scope.noteTitle = "Warning: name already existing in the selected workspace! ";
+        	$scope.useStorage = true;
     		$scope.$digest();      
         }).
         error(function(data, status) {
@@ -725,9 +743,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
             	notify('Success', uri + " created");
             	var path = $scope.userProfile.preferencesDir + $scope.metadata;
           	  	$scope.getStorage(path);
-            } else {
+            } if(action == UPDATE) {
             	notify('Success', uri + " updated");
             	$scope.createContainer(action, container);
+            } if(action == USEEXISTING){
+            	notify('Success', uri + " updated");
+            	var path = $scope.userProfile.preferencesDir + $scope.metadata;
+          	  	$scope.getStorage(path);
             }
           }
         }).
