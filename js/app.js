@@ -222,6 +222,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.mystorage.workspace = $scope.userProfile.workspaces[0];
     	$scope.isFocused = true;
     	$scope.noteTitle = "";
+    	$scope.useStorage = false;
     };
     
     $scope.save = function(newcontact) {
@@ -405,19 +406,44 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					var id = evs[e]['subject']['value'];
 					var sId = id.split("_"); 
 					
-					var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+					var fnPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'));
+					var fullname = "";
+					if(fnPredicate != null)
+						fullname = fnPredicate ['object']['value'];
 					
-					var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
-					var sEmail = email.split(":");
+					var emailPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'));
+					var sEmail = "";
+					if (emailPredicate != null){
+						var email = emailPredicate ['object']['value'];
+						sEmail = email.split(":");
+					}
 					
-					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
-					var sPhone = phone.split(":");
+					var phonePredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'));
+					var sPhone = "";
+					if(phonePredicate != null){
+						var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
+						sPhone = phone.split(":");
+					}
 					
-					var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
+					var uidPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'));
+					var webidPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasWebID'));
+					var uid = "";
+					if(uidPredicate != null)
+						uid = uidPredicate ['object']['value'];
+					else {
+						if(webidPredicate != null)
+							uid = webidPredicate ['object']['value'];
+					}
 					
-					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+					var picPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'));
+					var pic = "";
+					if(picPredicate != null)
+						pic = picPredicate ['object']['value'];
 					
-					var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
+					var keyPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'));
+					var key = "";
+					if(keyPredicate != null)
+						key = keyPredicate ['object']['value'];
 															
 					var contact = {
 					    id: sId[1],
