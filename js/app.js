@@ -30,6 +30,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 	$scope.searchedContacts = [];
     
     $scope.loggedin = false;
+    $scope.useStorage = false;
     $scope.userProfile = {};
     
     $scope.modalTitle = '';
@@ -44,6 +45,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     
     var CREATE = 0;
     var UPDATE = 1;
+    var USEEXISTING = 2;
            
     var queryTemplate = "construct { \n" +
 						"?VCard a <http://www.w3.org/2000/01/rdf-schema#Resource>, <http://www.w3.org/2006/vcard/ns#Individual> ; \n" +
@@ -220,6 +222,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     	$scope.mystorage.workspace = $scope.userProfile.workspaces[0];
     	$scope.isFocused = true;
     	$scope.noteTitle = "";
+    	$scope.useStorage = false;
     };
     
     $scope.save = function(newcontact) {
@@ -285,6 +288,15 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 		$scope.noteTitle = "";
 		var uri = $scope.userProfile.preferencesDir+$scope.metadata;
 		$scope.createOrUpdateMetadata(uri, UPDATE, storage);
+		$scope.mystorage.storagename = "";
+    };
+    
+    $scope.useExistingStorage = function(mystorage) {
+		$scope.noteTitle = "";
+		$scope.useStorage = false;
+		var uri = $scope.userProfile.preferencesDir+$scope.metadata;
+		var storage = mystorage.workspace + mystorage.storagename + "/";
+		$scope.createOrUpdateMetadata(uri, USEEXISTING, storage);
 		$scope.mystorage.storagename = "";
     };
     
@@ -394,19 +406,44 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 					var id = evs[e]['subject']['value'];
 					var sId = id.split("_"); 
 					
-					var fullname = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'))['object']['value'];
+					var fnPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('fn'));
+					var fullname = "";
+					if(fnPredicate != null)
+						fullname = fnPredicate ['object']['value'];
 					
-					var email = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'))['object']['value'];
-					var sEmail = email.split(":");
+					var emailPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasEmail'));
+					var sEmail = "";
+					if (emailPredicate != null){
+						var email = emailPredicate ['object']['value'];
+						sEmail = email.split(":");
+					}
 					
-					var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
-					var sPhone = phone.split(":");
+					var phonePredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'));
+					var sPhone = "";
+					if(phonePredicate != null){
+						var phone = g.anyStatementMatching(evs[e]['subject'], VCARD('hasTelephone'))['object']['value'];
+						sPhone = phone.split(":");
+					}
 					
-					var uid = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'))['object']['value'];
+					var uidPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasUID'));
+					var webidPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasWebID'));
+					var uid = "";
+					if(uidPredicate != null)
+						uid = uidPredicate ['object']['value'];
+					else {
+						if(webidPredicate != null)
+							uid = webidPredicate ['object']['value'];
+					}
 					
-					var pic = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'))['object']['value'];
+					var picPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasPhoto'));
+					var pic = "";
+					if(picPredicate != null)
+						pic = picPredicate ['object']['value'];
 					
-					var key = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'))['object']['value'];
+					var keyPredicate = g.anyStatementMatching(evs[e]['subject'], VCARD('hasKey'));
+					var key = "";
+					if(keyPredicate != null)
+						key = keyPredicate ['object']['value'];
 															
 					var contact = {
 					    id: sId[1],
@@ -519,7 +556,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
 				for (var e in evs) {
 					var storage = g.anyStatementMatching(evs[e]['subject'], SPACE('storage'))['object']['value'];
 					var prfs = g.anyStatementMatching(evs[e]['subject'], SPACE('preferencesFile'))['object']['value'];
-					var fullname = g.anyStatementMatching(evs[e]['subject'], FOAF('name'))['object']['value'];
+					
+					var fullnamePredicate = g.anyStatementMatching(evs[e]['subject'], FOAF('name'));
+					var fullname = "";
+					if(fullnamePredicate != null)
+						fullname = fullnamePredicate ['object']['value'];
+					else
+						fullname = $scope.userProfile.webid;
 					
 					var imagePredicate = g.anyStatementMatching(evs[e]['subject'], FOAF('img'));
 					var image = "";
@@ -661,7 +704,8 @@ app.controller('ContactController', function ($scope, $http, $sce) {
         }).
         success(function(data, status, headers) {
         	//container found, warn user to create a different one
-        	$scope.noteTitle = "Warning: name already existing in the selected workspace!";
+        	$scope.noteTitle = "Warning: name already existing in the selected workspace! ";
+        	$scope.useStorage = true;
     		$scope.$digest();      
         }).
         error(function(data, status) {
@@ -725,9 +769,13 @@ app.controller('ContactController', function ($scope, $http, $sce) {
             	notify('Success', uri + " created");
             	var path = $scope.userProfile.preferencesDir + $scope.metadata;
           	  	$scope.getStorage(path);
-            } else {
+            } if(action == UPDATE) {
             	notify('Success', uri + " updated");
             	$scope.createContainer(action, container);
+            } if(action == USEEXISTING){
+            	notify('Success', uri + " updated");
+            	var path = $scope.userProfile.preferencesDir + $scope.metadata;
+          	  	$scope.getStorage(path);
             }
           }
         }).

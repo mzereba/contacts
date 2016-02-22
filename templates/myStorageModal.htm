@@ -18,7 +18,7 @@
 	   			<select class="form-control" ng-model="mystorage.workspace" ng-options="ws for ws in userProfile.workspaces"></select>&nbsp;/&nbsp;<input class="bold_placeholder" ng-model="mystorage.storagename" ng-focus="isFocused" type="text" placeholder="container name...">
 			</p>
 		<button class="btn btn-success" ng-click="newStorage(mystorage)">Save</button>
-		<p class="noteTitle" id="note-Title">{{noteTitle}}</p>
+		<p class="noteTitle" id="note-Title">{{noteTitle}}<a href="#" class="noteLink" ng-show="useStorage" ng-click="useExistingStorage(mystorage)">Use anyway</a>.</p>
 	</form>
 	</div>
 </div>
