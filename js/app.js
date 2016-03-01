@@ -972,16 +972,39 @@ app.controller('ContactController', function ($scope, $http, $sce) {
        return rdf;
     };
     
-    // Composes a lighter version of contacts list as RDF resource, to be used by the contacts widget
+    // Composes a lighter version of contacts list as list, to be used by the contacts index
+//    $scope.indexTemplate = function (contacts) {
+//    	var rdf = "";
+//    	for (i in contacts) {
+//	    	var id = contacts[i].workspace + $scope.prefix + contacts[i].id;
+//	    	rdf +=   "<" + id + ">\n" +
+//	          "a <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
+//	          "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contacts[i].webid + "> ;\n" +
+//	          "<http://www.w3.org/2006/vcard/ns#fn> \"" + contacts[i].fullname + "\" .\n\n" ;
+//    	}
+//    	return rdf;
+//    };
+    
+    // Composes a lighter version of contacts list as RDF resource, to be used by the contacts index
     $scope.indexTemplate = function (contacts) {
-    	var rdf = "";
+    	var rdf = "<" + $scope.userProfile.index + "> \n";
+    		rdf += "a  <http://www.w3.org/2000/01/rdf-schema#Resource>, <https://example.com/contactsIndex> ;\n";
+    		rdf += "<http://www.w3.org/ns/ldp#contains> ";
+		var r1 = "";
+		var r2 = "";
     	for (i in contacts) {
-	    	var id = contacts[i].workspace + $scope.prefix + contacts[i].id;
-	    	rdf +=   "<" + id + ">\n" +
-	          "a <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
-	          "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contacts[i].webid + "> ;\n" +
-	          "<http://www.w3.org/2006/vcard/ns#fn> \"" + contacts[i].fullname + "\" .\n\n" ;
+    		r1 += "<" + $scope.userProfile.index + "#" + $scope.prefix + contacts[i].id + ">";
+    		r2 += "<" + $scope.userProfile.index + "#" + $scope.prefix + contacts[i].id + "> \n" +
+    				"a <http://www.w3.org/2006/vcard/ns#Individual> ;\n" +
+    		        "<http://www.w3.org/2006/vcard/ns#fn> \"" + contacts[i].fullname + "\" ;\n" +
+    		        "<http://www.w3.org/2006/vcard/ns#hasUID> <" + contacts[i].webid + "> .\n\n";
+    		
+    		if(i != contacts.length-1)
+    			r1 += ", ";
+    		else
+    			r1 += " .\n\n";
     	}
+    	rdf += r1 + r2;
     	return rdf;
     };
     
