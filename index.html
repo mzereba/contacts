@@ -74,6 +74,11 @@
 		        </tbody>
 		    </table>
 		</div>
+		<div class="footer" ng-show="loggedin">
+	      <p>
+	        © 2016 <i class="fa fa-group-2"></i> Contacts | <a href="https://github.com/mzereba/contacts"><i class="fa fa-github"></i> Source</a> | <a href="https://github.com/mzereba/contacts/issues"><i class="fa fa-bug"></i> Issues</a>
+	      </p>
+	    </div>
 		<div modal="viewContactModal" ng-include="'templates/viewContactModal.htm'" close="cancel()" ></div>
 		<div modal="editContactModal" ng-include="'templates/editContactModal.htm'" close="cancel()" ></div>
 		<div modal="authenticationModal" ng-include="'templates/authenticationModal.htm'" close="cancel()"></div>
