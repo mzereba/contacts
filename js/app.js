@@ -34,7 +34,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.userProfile = {};
     
     $scope.modalTitle = '';
-    $scope.endpoint = '';	
+    //$scope.endpoint = '';	
     
     $scope.prefix = "vcard_";
     
