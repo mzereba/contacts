@@ -34,7 +34,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
     $scope.userProfile = {};
     
     $scope.modalTitle = '';
-    //$scope.endpoint = '';	
+    $scope.endpoint = '';	
     
     $scope.prefix = "vcard_";
     
@@ -592,8 +592,6 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                     $scope.$apply();
                 }
 			}
-			
-            $scope.getEndPoint($scope.userProfile.storage);
 	    });  
     };
     
@@ -634,6 +632,7 @@ app.controller('ContactController', function ($scope, $http, $sce) {
                 }
 			}
 			//fetch user contacts
+			$scope.getEndPoint($scope.userProfile.storage);
 			$scope.loadEnabled();
 	    });
     };
